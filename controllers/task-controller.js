@@ -1,6 +1,16 @@
 // controllers/taskController.js
 const Task = require('../models/task-model');
 
+/**
+ * @file Defines the controller functions for handling task-related HTTP requests.
+ */
+
+/**
+ * Renders the main page with a list of all tasks.
+ * @async
+ * @param {object} req - The Express request object.
+ * @param {object} res - The Express response object.
+ */
 // Function to render the main page with all tasks
 exports.getTasks = async (req, res) => {
   try {
@@ -15,11 +25,27 @@ exports.getTasks = async (req, res) => {
   }
 };
 
+/**
+ * Creates a new task and redirects to the homepage.
+ * @async
+ * @function createTask
+ * @param {Object} req - The HTTP request object containing task data in the body.
+ * @param {Object} res - The HTTP response object used to send the response.
+ * @param {string} req.body.task_name - The name of the task.
+ * @param {string} req.body.task_status - The status of the task.
+ * @param {string} [req.body.deadline] - The deadline for the task (optional).
+ * @param {string} [req.body.description] - The description of the task (optional).
+ * @param {string} [req.body.priority] - The priority of the task (optional).
+ * @param {string} [req.body.category] - The category of the task (optional).
+ * @param {number} req.body.project_id - The ID of the project the task belongs to.
+ * @returns {Promise<void>} Redirects to the root URL on success or sends a 500 error on failure.
+ * @throws {Error} If the database query fails, logs the error and returns a server error response.
+ */
 // Function to handle new task creation
 exports.createTask = async (req, res) => {
   try {
     const { task_name, task_description, task_status, task_deadline, task_priority, task_category, project_id, assigned_uid } = req.body;
-    const result= await Task.create(task_name, task_status, task_deadline, task_description, task_priority, task_category, project_id);
+    const result= await Task.create(task_name, task_status, task_deadline ?? null, task_description, task_priority, task_category, project_id);
 
     // Get the inserted task ID
     const newTaskId = result.insertId;
@@ -38,7 +64,17 @@ exports.createTask = async (req, res) => {
     res.status(500).send('<h1>Server Error</h1><p>Could not create a new task. Please check the server console for details.</p>');
   }
 };
-
+/**
+ * Updates the status of a task based on the provided task ID and status.
+ * @async
+ * @function updateTaskStatus
+ * @param {Object} req - The HTTP request object containing task_id and status in the body.
+ * @param {Object} res - The HTTP response object used to send the response.
+ * @param {number} req.body.task_id - The ID of the task to update.
+ * @param {string} req.body.status - The new status to set for the task.
+ * @returns {Promise<void>} Redirects to the root URL on success or sends a 500 error on failure.
+ * @throws {Error} If the database query fails, logs the error and returns a server error response.
+ */
 // Function to update task status
 exports.updateTaskStatus = async (req, res) => {
   try {

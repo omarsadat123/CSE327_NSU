@@ -5,6 +5,7 @@
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
+    "docs": "jsdoc -c jsdoc.json",
     "test": "jest"
   },
   "dependencies": {
@@ -31,5 +32,4 @@
     "jest": "^30.0.5",
     "supertest": "^7.1.4"
   }
-  
 }

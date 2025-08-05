@@ -1,0 +1,17 @@
+{
+  "source": {
+    "include": [
+      "server.js",
+      "models",
+      "controllers",
+      "routes"
+    ],
+    "includePattern": ".js$",
+    "excludePattern": "(node_modules|docs)"
+  },
+  "opts": {
+    "destination": "./docs/jsdoc/",
+    "recurse": true,
+    "template": "node_modules/better-docs"
+  }
+}

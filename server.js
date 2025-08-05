@@ -2,7 +2,8 @@
 const express = require('express');
 const path = require('path');
 const taskRoutes = require('./routes/task-routes');
-const db = require('./configs/db'); // Import the database connection pool
+//  database connection pool
+const db = require('./configs/db'); 
 
 // Create the Express application
 const app = express();
@@ -33,8 +34,15 @@ const startServer = async () => {
   } catch (err) {
     console.error('Error connecting to the database or starting server:', err.message);
     console.error('Please ensure your MySQL service is running and the database configuration in config/db.js is correct.');
-    process.exit(1); // Exit with a failure code
+    // Exit with a failure code
+    process.exit(1); 
   }
 };
 
-startServer();
+// Start the server only if this file is run directly
+if (require.main === module) {
+  startServer();
+}
+
+// Export the app for testing purposes
+module.exports = app;
