@@ -48,7 +48,7 @@ describe('Task Controller Tests', () => {
         deadline: null,
         task_status: 'To Do',
         project_id: 1,
-        // ... add other fields as needed
+        // .. add other fields as needed
       };
       
       // 2. Mocking: Mock the create method. It should return a fake DB result.
@@ -63,6 +63,7 @@ describe('Task Controller Tests', () => {
       // 4. Assertion: Check if the logic was correct
       expect(response.statusCode).toBe(302); // 302 is the status code for a redirect
       expect(response.headers.location).toBe('/'); // Check it redirects to the homepage
+      
       
       // Check that Task.create was called with the correct arguments
       expect(Task.create).toHaveBeenCalledWith(
