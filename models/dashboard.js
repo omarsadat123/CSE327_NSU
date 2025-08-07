@@ -78,7 +78,7 @@ module.exports = {
        WHERE a.uid = ?
          AND t.status != 'done'
        ORDER BY t.deadline ASC
-       LIMIT 6`,
+       LIMIT 8`,
       [userId]
     );
     return rows;
