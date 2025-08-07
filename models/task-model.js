@@ -41,6 +41,33 @@ class Task {
     return rows;
   }
 
+
+static async getByProjectId(pid) {
+    const [rows] = await pool.query(
+      `SELECT
+        t.tid,
+        t.name AS task_name,
+        t.status,
+        t.deadline,
+        t.description AS task_description,
+        t.priority,
+        t.category,
+        p.name AS project_name,
+        p.pid,
+        GROUP_CONCAT(u.name SEPARATOR ', ') AS assigned_user_names
+      FROM tasks t
+      LEFT JOIN projects p ON t.pid = p.pid
+      LEFT JOIN assigned a ON t.tid = a.tid
+      LEFT JOIN users u ON a.uid = u.uid
+      WHERE t.pid = ?
+      GROUP BY t.tid
+      ORDER BY t.tid DESC`,
+      [pid]
+    );
+    return rows;
+  }
+
+
   /**
    * Creates a new task in the database.
    * @static
@@ -90,10 +117,10 @@ static async updateStatus(tid, newStatus) {
  * @returns {Promise<Array<Object>>} An array of user objects containing their IDs and names.
  */
 // Get all participants (users)
-static async getParticipants() {
-  const [rows] = await pool.query('SELECT uid, name FROM users');
-  return rows;
-}
+//static async getParticipants() {
+  //const [rows] = await pool.query('SELECT uid, name FROM users');
+ // return rows;
+//}
 
 
 /**
@@ -108,6 +135,19 @@ static async assignUser(uid, tid) {
   const [rows] = await pool.query('INSERT INTO assigned (uid, tid) VALUES (?, ?)', [uid, tid]);
   return rows;
 }
+
+
+static async getParticipantsByProject(pid) {
+  const [rows] = await pool.query(
+    `SELECT u.uid, u.name
+     FROM users u
+     JOIN participates pp ON u.uid = pp.uid
+     WHERE pp.pid = ?`,
+    [pid]
+  );
+  return rows;
+}
+
 
 
 }

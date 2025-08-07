@@ -57,9 +57,9 @@
                         <div>
                             <label for="task-status" class="block text-sm font-medium text-slate-600 mb-1">Status</label>
                             <select id="task-status" name="task_status" class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition">
-                                <option value="To Do">Pending</option>
+                                <option value="Pending">Pending</option>
                                 <option value="In Progress">In Progress</option>
-                                <option value="Done">Done</option>
+                                <option value="Completed">Completed</option>
                             </select>
                         </div>
                         <div>
@@ -104,7 +104,7 @@
                         </div>
 
                         <!-- We are hard-coding this for now, as we only have one project -->
-                        <input type="hidden" name="project_id" value="1">
+                        <input type="hidden" name="project_id" value="<%= projectId %>">
                         <button type="submit" class="w-full bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition">Create Task</button>
                     </form>
                 </div>
@@ -139,7 +139,7 @@
                                 const status_colors = {
                                     'Pending': 'bg-slate-100 text-slate-700',
                                     'In Progress': 'bg-blue-100 text-blue-700',
-                                    'Done': 'bg-green-100 text-green-700'
+                                    'Completed': 'bg-green-100 text-green-700'
                                 };
                             %>
                             <div class="task-card bg-white p-5 rounded-xl shadow-sm border border-slate-200">
