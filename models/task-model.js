@@ -148,7 +148,13 @@ static async getParticipantsByProject(pid) {
   return rows;
 }
 
-
+static async getProjectNameById(pid) {
+  const [rows] = await pool.query(
+    'SELECT name FROM projects WHERE pid = ?',
+    [pid]
+  );
+  return rows.length > 0 ? rows[0].name : null;
+}
 
 }
 

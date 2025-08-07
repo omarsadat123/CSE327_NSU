@@ -18,7 +18,10 @@ exports.getTasks = async (req, res) => {
     const tasks = await Task.getByProjectId(projectId);
     //const participants = await Task.getParticipants();
     const participants = await Task.getParticipantsByProject(projectId);
-    res.render('index', { tasks, participants,projectId });
+    // Fetch project name
+    const projectName = await Task.getProjectNameById(projectId);
+
+    res.render('index', { tasks, participants,projectName,projectId });
   } catch (err) {
     console.error('Error fetching tasks from the database:', err.message);
     res.status(500).send('<h1>Server Error</h1><p>Could not load tasks.</p>');
