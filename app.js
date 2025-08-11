@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /**
  * @file Main application entry point for ProCollab.
  * @module app
@@ -94,3 +95,6 @@ app.use((err, req, res, next) => {
 });
 
 module.exports = app;
+=======
+
+>>>>>>> c067ed8571971c55e1f070c61a055de443d8f0f6

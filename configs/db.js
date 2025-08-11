@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /**
  * @file Database configuration for ProCollab.
  * @module configs/db
@@ -39,3 +40,6 @@ const dbConfig = {
 const db = mysql.createPool(dbConfig);
 
 module.exports = db;
+=======
+
+>>>>>>> c067ed8571971c55e1f070c61a055de443d8f0f6
