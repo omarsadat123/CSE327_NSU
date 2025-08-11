@@ -1,80 +1,61 @@
 /**
  * ProCollab Application Entry Point
- * Sets up the Express server, session store, routes, and middleware.
+ * Sets up Express app, session handling, routes, and dashboard.
  */
 
 const express = require('express');
 const path = require('path');
 const bodyParser = require('body-parser');
 const session = require('express-session');
-const MySQLStore = require('express-mysql-session')(session);
+// Removed MySQLStore import because it’s not used anymore
 
-const db = require('./configs/db'); // MySQL pool connection
-const authRoutes = require('./routes/auth'); // Authentication routes
+const authRoutes = require('./routes/auth');
 
 const app = express();
 
-// ----------------------------
-// Session Store Configuration
-// ----------------------------
-const sessionStore = new MySQLStore({}, db);
-
-// ----------------------------
-// Middleware
-// ----------------------------
+// Middleware to parse application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: false }));
+
+// Middleware to parse JSON bodies
 app.use(bodyParser.json());
 
+// Session middleware setup without DB session store
 app.use(session({
-    key: 'procollab_sid',
-    secret: 'procollab_session', // Replace with secure random value
-    store: sessionStore,
-    resave: false,
-    saveUninitialized: false,
-    cookie: {
-        maxAge: 1000 * 60 * 60 // 1 hour
-    }
+  key: 'procollab_sid',
+  secret: 'procollab_session',
+  resave: false,
+  saveUninitialized: false,
+  cookie: { maxAge: 1000 * 60 * 60 }
+  // no store option here — using default MemoryStore
 }));
 
-// ----------------------------
-// View Engine Setup
-// ----------------------------
+// Set EJS as the view engine
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
-// ----------------------------
-// Static Files
-// ----------------------------
+// Serve static files from public folder
 app.use(express.static(path.join(__dirname, 'public')));
 
-// ----------------------------
-// Routes
-// ----------------------------
-
-// GET login page
-app.get('/login', (req, res) => {
-    return res.render('login', { error: undefined });
-});
-
-// Authentication routes
+// Mount authentication routes at root path
 app.use('/', authRoutes);
 
-// Dashboard example
+/**
+ * GET /dashboard
+ * Renders dashboard for logged-in users, otherwise redirects to login
+ */
 app.get('/dashboard', (req, res) => {
-    if (!req.session.user) { // Session check
+    if (!req.session.user) {
         return res.redirect('/login');
     }
-    return res.send(`
+    res.send(`
         <h1>Welcome to ProCollab Dashboard!</h1>
         <p>User: ${req.session.user.name}</p>
         <p>Email: ${req.session.user.email}</p>
     `);
 });
 
-// ----------------------------
-// Start Server
-// ----------------------------
-const PORT = 3000; // Static value (consider moving to .env)
+// Start server on specified port or default 3000
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     console.log(`Server running on http://localhost:${PORT}`);
 });

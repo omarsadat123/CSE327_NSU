@@ -14,29 +14,28 @@
                 <div class="card-body">
                     <h3 class="card-title text-center mb-4">Verify OTP</h3>
 
-                    <% if (typeof error !== 'undefined') { %>
+                    <% if (error) { %>
                         <div class="alert alert-danger"><%= error %></div>
                     <% } %>
 
-                    <% if (typeof success !== 'undefined') { %>
+                    <% if (success) { %>
                         <div class="alert alert-success"><%= success %></div>
                     <% } %>
 
                     <form action="/verifyOtp" method="POST">
-
-                        <input type="hidden" name="uid" value="<%= uid %>">
+                        <input type="hidden" name="email" value="<%= email %>">
 
                         <div class="mb-3">
-                            <label class="form-label">Enter OTP</label>
-                            <input type="text" name="otp" class="form-control" maxlength="6" required>
+                            <label for="otp" class="form-label">Enter OTP</label>
+                            <input type="text" name="otp" id="otp" class="form-control" required>
                         </div>
 
-                        <button type="submit" class="btn btn-success w-100">Verify</button>
+                        <button type="submit" class="btn btn-primary w-100">Verify</button>
                     </form>
 
-                    <div class="text-center mt-3">
-                        
-                    </div>
+                    <p class="text-center mt-3 mb-0">
+                        Didn't receive OTP? <a href="/resendOtp?email=<%= email %>">Resend</a>
+                    </p>
                 </div>
             </div>
         </div>

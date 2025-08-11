@@ -5,34 +5,37 @@
 
 const bcrypt = require('bcrypt');
 const nodemailer = require('nodemailer');
-
 const UserModel = require('../models/users.model');
 const LoginModel = require('../models/login.model');
 
+// Temporary in-memory store for OTP + signup data
+const pendingSignups = {};
+
 /**
- * Signup Controller
- * @param {Object} req - Express request object
- * @param {Object} res - Express response object
+ * Handles user signup by generating OTP, hashing password, and sending OTP email.
+ * Stores temporary signup data in memory until OTP verification.
+ * 
+ * @async
+ * @function signup
+ * @param {import('express').Request} req - Express request object
+ * @param {import('express').Response} res - Express response object
+ * @returns {Promise<void>}
  */
 async function signup(req, res) {
     try {
         const { name, email, password } = req.body;
-
-        // Create user in DB
-        const uid = await UserModel.createUser(name, email);
-
-        // Hash password and store credentials
-        const passwordHash = await bcrypt.hash(password, 10);
-        await UserModel.storePassword(uid, passwordHash);
+        const normalizedEmail = email.trim().toLowerCase();
 
         // Generate OTP
         const otp = Math.floor(100000 + Math.random() * 900000);
 
-        // Store OTP in session
-        req.session.otp = otp;
-        req.session.uid = uid;
+        // Hash password now (store temporarily)
+        const passwordHash = await bcrypt.hash(password, 10);
 
-        // Send OTP email
+        // Store in memory
+        pendingSignups[normalizedEmail] = { name, email: normalizedEmail, passwordHash, otp };
+
+        // Send OTP via email
         const transporter = nodemailer.createTransport({
             service: 'gmail',
             auth: {
@@ -41,17 +44,15 @@ async function signup(req, res) {
             }
         });
 
-        const mailOptions = {
+        await transporter.sendMail({
             from: 'hossainahammedphp@gmail.com',
-            to: email,
+            to: normalizedEmail,
             subject: 'Your OTP Code',
             text: `Your OTP is: ${otp}`
-        };
-
-        await transporter.sendMail(mailOptions);
+        });
 
         // Redirect to OTP page
-        res.redirect(`/verifyOtp?uid=${uid}`);
+        res.redirect(`/verifyOtp?email=${encodeURIComponent(normalizedEmail)}`);
     } catch (error) {
         console.error('Signup Error:', error);
         res.status(500).send('Server Error');
@@ -59,67 +60,85 @@ async function signup(req, res) {
 }
 
 /**
- * OTP Verification Controller
- * @param {Object} req - Express request object
- * @param {Object} res - Express response object
+ * Verifies the OTP entered by the user against the one generated during signup.
+ * If valid, creates the user in the database and clears temporary data.
+ * 
+ * @async
+ * @function verifyOtp
+ * @param {import('express').Request} req - Express request object
+ * @param {import('express').Response} res - Express response object
+ * @returns {Promise<void>}
  */
 async function verifyOtp(req, res) {
-    const { uid, otp } = req.body;
+    try {
+        const email = req.body.email.trim().toLowerCase();
+        const enteredOtp = parseInt(req.body.otp, 10);
 
-    if (
-        parseInt(otp, 10) === req.session.otp &&
-        parseInt(uid, 10) === req.session.uid
-    ) {
-        req.session.otp = null;
-        req.session.uid = null;
-        res.redirect('/login');
-    } else {
-        res.status(400).send('Invalid OTP');
+        const pendingData = pendingSignups[email];
+
+        if (!pendingData) {
+            return res.render('verifyOtp', { 
+                email, 
+                error: 'No signup found for this email', 
+                success: null 
+            });
+        }
+
+        if (enteredOtp !== pendingData.otp) {
+            return res.render('verifyOtp', { 
+                email, 
+                error: 'Invalid OTP', 
+                success: null 
+            });
+        }
+
+        // Save user in DB
+        const uid = await UserModel.createUser(pendingData.name, pendingData.email);
+        await UserModel.storePassword(uid, pendingData.passwordHash);
+
+        // Remove from memory
+        delete pendingSignups[email];
+
+        return res.redirect('/login');
+        
+    } catch (error) {
+        console.error('OTP Verification Error:', error);
+        return res.render('verifyOtp', { 
+            email: req.body.email || '', 
+            error: 'Server error. Please try again.', 
+            success: null 
+        });
     }
 }
 
 /**
- * Login Controller
- * @param {Object} req - Express request object
- * @param {Object} res - Express response object
+ * Authenticates a user by verifying credentials and starts a session.
+ * 
+ * @async
+ * @function login
+ * @param {import('express').Request} req - Express request object
+ * @param {import('express').Response} res - Express response object
+ * @returns {Promise<void>}
  */
 async function login(req, res) {
     try {
         const { email, password } = req.body;
-
-        // Get user from model
-        const user = await LoginModel.getUserWithCredentials(email);
+        const user = await LoginModel.getUserWithCredentials(email.trim().toLowerCase());
 
         if (!user) {
-            return res.status(404).json({ message: 'User not found' });
+            return res.render('/login', { error: 'User not found' });
         }
 
-        // Compare password with hashed password
         const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) {
-            return res.status(401).json({ message: 'Invalid credentials' });
+            return res.render('/login', { error: 'Invalid credentials' });
         }
 
-        // Store user in session
-        req.session.user = {
-            uid: user.uid,
-            name: user.name,
-            email: user.email
-        };
-        // Respond with success
-        // Redirect to dashboard later
-        res.status(200).json({
-            message: 'Login successful',
-            user: {
-                uid: user.uid,
-                name: user.name,
-                email: user.email
-            }
-        });
+       res.status(500).send('Success');
     } catch (error) {
         console.error('Login Error:', error);
-        res.status(500).json({ message: 'Server error' });
+        res.status(500).send('Server error');
     }
 }
 
-module.exports = {signup,verifyOtp,login};
+module.exports = { signup, verifyOtp, login };
