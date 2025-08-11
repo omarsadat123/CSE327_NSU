@@ -1,6 +1,7 @@
 {
   "name": "cse327_nsu",
   "version": "1.0.0",
+<<<<<<< HEAD
   "description": "A task manager app with Node.js and MySQL following MVC.",
   "main": "app.js",
   "scripts": {
@@ -8,6 +9,10 @@
     "docs": "jsdoc -c jsdoc.json",
     "test": "jest"
   },
+=======
+  "description": "",
+  "main": "app.js",
+>>>>>>> 372cb7aacc1dd4aa03b85fb4c69adca967b24e1e
   "directories": {
     "doc": "docs",
     "test": "tests"
@@ -24,6 +29,7 @@
   },
   "homepage": "https://github.com/omarsadat123/CSE327_NSU#readme",
   "dependencies": {
+    "bcryptjs": "^3.0.2",
     "body-parser": "^2.2.0",
     "ejs": "^3.1.10",
     "express": "^5.1.0",

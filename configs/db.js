@@ -38,4 +38,19 @@ const dbConfig = {
  */
 const db = mysql.createPool(dbConfig);
 
+<<<<<<< HEAD
 module.exports = db;
+=======
+// Test the connection
+db.getConnection()
+  .then((connection) => {
+    console.log('MySQL connected');
+    connection.release();
+  })
+  .catch((err) => {
+    console.error('MySQL connection error:', err);
+    throw err;
+  });
+
+module.exports = db;
+>>>>>>> 372cb7aacc1dd4aa03b85fb4c69adca967b24e1e
