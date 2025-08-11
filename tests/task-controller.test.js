@@ -1,82 +1,108 @@
 // tests/task-controller.test.js
-
 const request = require('supertest');
-const app = require('../server'); // Import your app
-const Task = require('../models/task-model'); // Import the model we want to mock
+const app = require('../app');
+const Task = require('../models/task-model');
 
-// Mock the entire task-model module
 jest.mock('../models/task-model');
 
-describe('Task Controller Tests', () => {
+Task.getByProjectId = jest.fn();
+Task.getParticipantsByProject = jest.fn();
+Task.getProjectNameById = jest.fn();
+Task.create = jest.fn();
+Task.assignUser = jest.fn();
 
-  // Clear all mocks before each test to ensure tests are isolated
+describe('Task Controller Tests', () => {
   beforeEach(() => {
     jest.clearAllMocks();
   });
 
-  // Test suite for GET / (getTasks)
-  describe('GET /', () => {
-    it('should fetch all tasks and render the index page', async () => {
-      // 1. Setup: Define our fake data
+  describe('GET /projects/:projectId', () => {
+    it('should fetch all tasks and render the task-create page', async () => {
+      const projectId = '1';
       const mockTasks = [
-        { tid: 1, task_name: 'My First Test Task', status: 'Pending' },
-        { tid: 2, task_name: 'Another Test Task', status: 'In Progress' }
+        {
+          tid: 1,
+          task_name: 'My First Test Task',
+          status: 'Pending',
+          deadline: null,
+          task_description: 'Test description',
+          priority: 'Medium',
+          category: 'Development',
+          project_name: 'Test Project',
+          pid: 1,
+          assigned_user_names: 'Chayan',
+        },
+        {
+          tid: 2,
+          task_name: 'Another Test Task',
+          status: 'In Progress',
+          deadline: '2025-08-15',
+          task_description: null,
+          priority: 'High',
+          category: 'Design',
+          project_name: 'Test Project',
+          pid: 1,
+          assigned_user_names: null,
+        },
       ];
       const mockParticipants = [{ uid: 1, name: 'Chayan' }];
+      const mockProjectName = 'Test Project';
 
-      // 2. Mocking: Tell our fake model what to return when called
-      Task.getAll.mockResolvedValue(mockTasks);
-      Task.getParticipants.mockResolvedValue(mockParticipants);
+      Task.getByProjectId.mockResolvedValue(mockTasks);
+      Task.getParticipantsByProject.mockResolvedValue(mockParticipants);
+      Task.getProjectNameById.mockResolvedValue(mockProjectName);
 
-      // 3. Action: Make a request to our app
-      const response = await request(app).get('/');
+      const response = await request(app).get(`/projects/${projectId}`);
 
-      // 4. Assertion: Check if everything worked as expected
       expect(response.statusCode).toBe(200);
-      expect(Task.getAll).toHaveBeenCalledTimes(1); // Was the model function called?
-      expect(Task.getParticipants).toHaveBeenCalledTimes(1);
-      expect(response.text).toContain('My First Test Task'); // Does the rendered HTML contain our fake data?
+      expect(Task.getByProjectId).toHaveBeenCalledWith(projectId);
+      expect(Task.getByProjectId).toHaveBeenCalledTimes(1);
+      expect(Task.getParticipantsByProject).toHaveBeenCalledWith(projectId);
+      expect(Task.getParticipantsByProject).toHaveBeenCalledTimes(1);
+      expect(Task.getProjectNameById).toHaveBeenCalledWith(projectId);
+      expect(Task.getProjectNameById).toHaveBeenCalledTimes(1);
+      expect(response.text).toContain('My First Test Task');
+      expect(response.text).toContain('Test Project');
+      expect(response.text).toContain('Chayan');
     });
   });
 
-  // Test suite for POST / (createTask)
   describe('POST /', () => {
-    it('should create a new task and redirect', async () => {
-      // 1. Setup: Define the form data we are "sending"
+    it('should create a new task and redirect to project page', async () => {
       const taskData = {
         task_name: 'New Test Task',
-        deadline: null,
+        task_description: 'Test description',
         task_status: 'To Do',
-        project_id: 1,
-        // .. add other fields as needed
+        task_deadline: '', // Changed to empty string to match form behavior
+        task_priority: 'Medium',
+        task_category: 'Development',
+        project_id: '1',
+        'assigned_uid[]': ['1'],
       };
-      
-      // 2. Mocking: Mock the create method. It should return a fake DB result.
-      Task.create.mockResolvedValue({ insertId: 99 });
-      Task.assignUser.mockResolvedValue({}); // Mock assignUser as well
 
-      // 3. Action: Make a POST request
+      Task.create.mockResolvedValue({ insertId: 99 });
+      Task.assignUser.mockResolvedValue({});
+
       const response = await request(app)
         .post('/')
+        .set('Content-Type', 'application/x-www-form-urlencoded')
         .send(taskData);
 
-      // 4. Assertion: Check if the logic was correct
-      expect(response.statusCode).toBe(302); // 302 is the status code for a redirect
-      expect(response.headers.location).toBe('/'); // Check it redirects to the homepage
-      
-      
-      // Check that Task.create was called with the correct arguments
+      expect(response.statusCode).toBe(302);
+      expect(response.headers.location).toBe('/projects/1');
+
       expect(Task.create).toHaveBeenCalledWith(
         taskData.task_name,
         taskData.task_status,
-        null, // Deadline was null in our test data
-        undefined, // Description was undefined
-        undefined, // Priority was undefined
-        undefined, // Category was undefined
+        taskData.task_deadline, // ""
+        taskData.task_description,
+        taskData.task_priority,
+        taskData.task_category,
         taskData.project_id
       );
       expect(Task.create).toHaveBeenCalledTimes(1);
+      expect(Task.assignUser).toHaveBeenCalledWith('1', 99);
+      expect(Task.assignUser).toHaveBeenCalledTimes(1);
     });
   });
-
 });

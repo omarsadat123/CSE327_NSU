@@ -2,9 +2,9 @@
   "name": "cse327_nsu",
   "version": "1.0.0",
   "description": "A task manager app with Node.js and MySQL following MVC.",
-  "main": "server.js",
+  "main": "app.js",
   "scripts": {
-    "start": "node server.js",
+    "start": "node app.js",
     "docs": "jsdoc -c jsdoc.json",
     "test": "jest"
   },
