@@ -1,7 +1,6 @@
 {
   "name": "cse327_nsu",
   "version": "1.0.0",
-<<<<<<< HEAD
   "description": "A task manager app with Node.js and MySQL following MVC.",
   "main": "app.js",
   "scripts": {
@@ -9,57 +8,34 @@
     "docs": "jsdoc -c jsdoc.json",
     "test": "jest"
   },
-=======
-  "description": "",
-  "main": "app.js",
->>>>>>> 8ee198a709fb22b91d8f963cce24d28a9f7fb20b
   "directories": {
     "doc": "docs",
     "test": "tests"
   },
-<<<<<<< HEAD
-=======
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
->>>>>>> 8ee198a709fb22b91d8f963cce24d28a9f7fb20b
   "repository": {
     "type": "git",
     "url": "git+https://github.com/omarsadat123/CSE327_NSU.git"
   },
-<<<<<<< HEAD
   "keywords": [],
-=======
->>>>>>> 8ee198a709fb22b91d8f963cce24d28a9f7fb20b
   "author": "",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/omarsadat123/CSE327_NSU/issues"
   },
   "homepage": "https://github.com/omarsadat123/CSE327_NSU#readme",
-<<<<<<< HEAD
   "dependencies": {
     "bcryptjs": "^3.0.2",
     "body-parser": "^2.2.0",
-=======
-  "keywords": [],
-  "dependencies": {
-    "body-parser": "^2.2.0",
     "dotenv": "^17.2.1",
->>>>>>> 8ee198a709fb22b91d8f963cce24d28a9f7fb20b
     "ejs": "^3.1.10",
     "express": "^5.1.0",
     "express-session": "^1.18.2",
     "mysql2": "^3.14.3",
     "nodemailer": "^7.0.5"
   },
-<<<<<<< HEAD
   "devDependencies": {
     "jest": "^30.0.5",
     "jsdoc": "^4.0.4",
     "supertest": "^7.1.4"
   }
-=======
-  "devDependencies": {}
->>>>>>> 8ee198a709fb22b91d8f963cce24d28a9f7fb20b
 }
