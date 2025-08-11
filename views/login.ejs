@@ -6,6 +6,35 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body class="bg-light">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
+    <div class="container-fluid">
+      <a class="navbar-brand fw-bold" href="/">
+        <i class="bi bi-diagram-3-fill me-2"></i>ProCollab
+      </a>
+      <button
+        class="navbar-toggler"
+        type="button"
+        data-bs-toggle="collapse"
+        data-bs-target="#navbarNav"
+      >
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item">
+            <a class="nav-link fw-semibold active" href="/login">
+              <i class="bi bi-box-arrow-in-right me-1"></i>Login
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link fw-semibold" href="/signup">
+              <i class="bi bi-person-plus-fill me-1"></i>Signup
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
 
 <div class="container vh-100 d-flex justify-content-center align-items-center">
     <div class="card shadow-sm" style="width: 100%; max-width: 400px;">
@@ -49,9 +78,6 @@
                     </div>
             </form>
 
-            <p class="text-center mt-3 mb-0">
-                Don’t have an account? <a href="/signup">Sign up</a>
-            </p>
         </div>
     </div>
 </div>

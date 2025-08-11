@@ -1,9 +1,13 @@
 /**
  * Authentication Controller
- * Handles signup, OTP verification, and login processes.
+ * Handles signup, OTP verification, and login processes (no password hashing).
+ * 
+ * This module provides three main functions:
+ * - signup: Registers a user and sends OTP for verification.
+ * - verifyOtp: Verifies OTP and stores user in the database.
+ * - login: Authenticates a user using plain text password comparison.
  */
 
-const bcrypt = require('bcrypt');
 const nodemailer = require('nodemailer');
 const UserModel = require('../models/users.model');
 const LoginModel = require('../models/login.model');
@@ -12,28 +16,30 @@ const LoginModel = require('../models/login.model');
 const pendingSignups = {};
 
 /**
- * Handles user signup by generating OTP, hashing password, and sending OTP email.
+ * Handles user signup by generating OTP and sending OTP email.
  * Stores temporary signup data in memory until OTP verification.
  * 
  * @async
  * @function signup
- * @param {import('express').Request} req - Express request object
- * @param {import('express').Response} res - Express response object
- * @returns {Promise<void>}
+ * @param {import('express').Request} req - Express request object containing `name`, `email`, and `password` in body.
+ * @param {import('express').Response} res - Express response object.
+ * @returns {Promise<void>} Redirects to OTP verification page or sends error.
  */
 async function signup(req, res) {
     try {
         const { name, email, password } = req.body;
         const normalizedEmail = email.trim().toLowerCase();
 
-        // Generate OTP
+        // Generate a 6-digit OTP
         const otp = Math.floor(100000 + Math.random() * 900000);
 
-        // Hash password now (store temporarily)
-        const passwordHash = await bcrypt.hash(password, 10);
-
-        // Store in memory
-        pendingSignups[normalizedEmail] = { name, email: normalizedEmail, passwordHash, otp };
+        // Store raw password (no hashing)
+        pendingSignups[normalizedEmail] = { 
+            name, 
+            email: normalizedEmail, 
+            password, 
+            otp 
+        };
 
         // Send OTP via email
         const transporter = nodemailer.createTransport({
@@ -51,7 +57,7 @@ async function signup(req, res) {
             text: `Your OTP is: ${otp}`
         });
 
-        // Redirect to OTP page
+        // Redirect to OTP verification page
         res.redirect(`/verifyOtp?email=${encodeURIComponent(normalizedEmail)}`);
     } catch (error) {
         console.error('Signup Error:', error);
@@ -60,14 +66,13 @@ async function signup(req, res) {
 }
 
 /**
- * Verifies the OTP entered by the user against the one generated during signup.
- * If valid, creates the user in the database and clears temporary data.
+ * Verifies OTP and creates the user in the database with plain text password.
  * 
  * @async
  * @function verifyOtp
- * @param {import('express').Request} req - Express request object
- * @param {import('express').Response} res - Express response object
- * @returns {Promise<void>}
+ * @param {import('express').Request} req - Express request object containing `email` and `otp` in body.
+ * @param {import('express').Response} res - Express response object.
+ * @returns {Promise<void>} Redirects to login page or renders OTP verification error.
  */
 async function verifyOtp(req, res) {
     try {
@@ -92,15 +97,14 @@ async function verifyOtp(req, res) {
             });
         }
 
-        // Save user in DB
+        // Save user in DB (password stored as plain text)
         const uid = await UserModel.createUser(pendingData.name, pendingData.email);
-        await UserModel.storePassword(uid, pendingData.passwordHash);
+        await UserModel.storePassword(uid, pendingData.password);
 
-        // Remove from memory
+        // Remove temporary signup data
         delete pendingSignups[email];
 
         return res.redirect('/login');
-        
     } catch (error) {
         console.error('OTP Verification Error:', error);
         return res.render('verifyOtp', { 
@@ -112,13 +116,13 @@ async function verifyOtp(req, res) {
 }
 
 /**
- * Authenticates a user by verifying credentials and starts a session.
+ * Authenticates user by comparing email and plain text password.
  * 
  * @async
  * @function login
- * @param {import('express').Request} req - Express request object
- * @param {import('express').Response} res - Express response object
- * @returns {Promise<void>}
+ * @param {import('express').Request} req - Express request object containing `email` and `password` in body.
+ * @param {import('express').Response} res - Express response object.
+ * @returns {Promise<void>} Sends success message or renders login error.
  */
 async function login(req, res) {
     try {
@@ -126,15 +130,15 @@ async function login(req, res) {
         const user = await LoginModel.getUserWithCredentials(email.trim().toLowerCase());
 
         if (!user) {
-            return res.render('/login', { error: 'User not found' });
+            return res.render('login', { error: 'User not found' });
         }
 
-        const isMatch = await bcrypt.compare(password, user.password);
-        if (!isMatch) {
-            return res.render('/login', { error: 'Invalid credentials' });
+        // Compare plain text passwords
+        if (password !== user.password) {
+            return res.render('login', { error: 'Invalid credentials' });
         }
 
-       res.status(500).send('Success');
+        res.send('Login successful');
     } catch (error) {
         console.error('Login Error:', error);
         res.status(500).send('Server error');
