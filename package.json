@@ -1,0 +1,39 @@
+{
+  "name": "cse327_nsu",
+  "version": "1.0.0",
+  "description": "A task manager app with Node.js and MySQL following MVC.",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "docs": "jsdoc -c jsdoc.json",
+    "test": "jest"
+  },
+  "directories": {
+    "doc": "docs",
+    "test": "tests"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/omarsadat123/CSE327_NSU.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/omarsadat123/CSE327_NSU/issues"
+  },
+  "homepage": "https://github.com/omarsadat123/CSE327_NSU#readme",
+  "dependencies": {
+    "body-parser": "^2.2.0",
+    "ejs": "^3.1.10",
+    "express": "^5.1.0",
+    "express-session": "^1.18.2",
+    "mysql2": "^3.14.3",
+    "nodemailer": "^7.0.5"
+  },
+  "devDependencies": {
+    "jest": "^30.0.5",
+    "jsdoc": "^4.0.4",
+    "supertest": "^7.1.4"
+  }
+}

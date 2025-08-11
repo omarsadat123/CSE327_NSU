@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: models/dashboard.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: models/dashboard.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * @file Dashboard data model for ProCollab.
+ * @module models/dashboard
+ * @description Provides methods for fetching dashboard-related data (projects, tasks, user stats).
+ */
+
+const db = require('../configs/db');
+
+module.exports = {
+  /**
+   * Fetches a user's basic details by ID.
+   * @async
+   * @param {number} userId - The user's unique ID.
+   * @returns {Promise&lt;{name: string}>} Object containing the user's name.
+   * @throws {Error} If database query fails.
+   * @example
+   * const user = await dashboard.getUserById(123);
+   * console.log(user.name); // "John Doe"
+   */
+  async getUserById(userId) {
+    const [rows] = await db.query('SELECT name FROM users WHERE uid = ?', [userId]);
+    return rows[0];
+  },
+
+  /**
+   * Counts active projects owned/joined by a user.
+   * @async
+   * @param {number} userId - The user's unique ID.
+   * @returns {Promise&lt;{owned: number, joined: number}>} Counts of owned/joined active projects.
+   * @throws {Error} If database query fails.
+   */
+  async getActiveProjectCounts(userId) {
+    const [[owned]] = await db.query(
+      `SELECT COUNT(*) AS count
+       FROM projects p
+       JOIN participates pa ON p.pid = pa.pid
+       WHERE pa.uid = ? AND pa.role = 'Owner'
+       AND p.status = 'active'`,
+      [userId]
+    );
+
+    const [[joined]] = await db.query(
+      `SELECT COUNT(*) AS count
+       FROM projects p
+       JOIN participates pa ON p.pid = pa.pid
+       WHERE pa.uid = ? AND pa.role = 'Member'
+       AND p.status = 'active'`,
+      [userId]
+    );
+
+    return { owned: owned.count, joined: joined.count };
+  },
+
+  /**
+   * Counts pending tasks assigned to a user.
+   * @async
+   * @param {number} userId - The user's unique ID.
+   * @returns {Promise&lt;number>} Count of pending tasks.
+   * @throws {Error} If database query fails.
+   */
+  async getPendingTasksCount(userId) {
+    const [[count]] = await db.query(
+      `SELECT COUNT(*) AS count
+       FROM tasks t
+       JOIN assigned a ON t.tid = a.tid
+       WHERE a.uid = ? AND t.status != 'done'`,
+      [userId]
+    );
+    return count.count;
+  },
+
+  /**
+   * Lists projects owned by a user.
+   * @async
+   * @param {number} userId - The user's unique ID.
+   * @returns {Promise&lt;Array&lt;{pid: number, name: string}>>} Array of project objects.
+   * @throws {Error} If database query fails.
+   */
+  async getOwnedProjects(userId) {
+    const [rows] = await db.query(
+      `SELECT p.pid, p.name
+       FROM projects p
+       JOIN participates pa ON p.pid = pa.pid
+       WHERE pa.uid = ? AND pa.role = 'Owner'
+       ORDER BY p.pid DESC`,
+      [userId]
+    );
+    return rows;
+  },
+
+  /**
+   * Lists projects joined by a user (with owner names).
+   * @async
+   * @param {number} userId - The user's unique ID.
+   * @returns {Promise&lt;Array&lt;{pid: number, name: string, owner_name: string}>>} Array of project objects.
+   * @throws {Error} If database query fails.
+   */
+  async getJoinedProjects(userId) {
+    const [rows] = await db.query(
+      `SELECT p.pid, p.name, u.name AS owner_name
+       FROM projects p
+       JOIN participates pa ON p.pid = pa.pid
+       JOIN participates po ON p.pid = po.pid AND po.role = 'Owner'
+       JOIN users u ON po.uid = u.uid
+       WHERE pa.uid = ? AND pa.role = 'Member'
+       ORDER BY p.pid DESC`,
+      [userId]
+    );
+    return rows;
+  },
+
+  /**
+   * Lists upcoming tasks assigned to a user (sorted by deadline).
+   * @async
+   * @param {number} userId - The user's unique ID.
+   * @returns {Promise&lt;Array&lt;{tid: number, task_name: string, deadline: string, project_name: string, pid: number}>>} Array of task objects.
+   * @throws {Error} If database query fails.
+   */
+  async getUpcomingTasks(userId) {
+    const [rows] = await db.execute(
+      `SELECT t.tid, t.name AS task_name, t.deadline,
+              p.name AS project_name, p.pid
+       FROM tasks t
+       JOIN projects p ON t.pid = p.pid
+       JOIN assigned a ON t.tid = a.tid
+       WHERE a.uid = ? AND t.status != 'done'
+       ORDER BY t.deadline ASC
+       LIMIT 8`,
+      [userId]
+    );
+    return rows;
+  }
+};</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-configs_db.html">configs/db</a></li><li><a href="module-controllers_dashboard-controller.html">controllers/dashboard-controller</a></li><li><a href="module-controllers_project-controller.html">controllers/project-controller</a></li><li><a href="module-models_dashboard.html">models/dashboard</a></li><li><a href="module-models_project.html">models/project</a></li><li><a href="module-routes_dashboard-routes.html">routes/dashboard-routes</a></li><li><a href="module-routes_project-routes.html">routes/project-routes</a></li></ul><h3>Classes</h3><ul><li><a href="module-models_project-Project.html">Project</a></li></ul><h3>Global</h3><ul><li><a href="global.html#db">db</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.4</a> on Sat Aug 09 2025 19:45:52 GMT+0600 (Bangladesh Standard Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
