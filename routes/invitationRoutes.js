@@ -1,7 +1,15 @@
-// routes/invitationRoutes.js
 const express = require('express');
 const router = express.Router();
 const invitationController = require('../controllers/invitationController');
+
+// Authentication middleware, quick inline version:
+const isAuthenticated = (req, res, next) => {
+  if (req.session.userId) return next();
+  res.redirect('/login');
+};
+
+// Use auth middleware on all invitation routes:
+router.use(isAuthenticated);
 
 // Show invitations list
 router.get('/', invitationController.viewInvitations);

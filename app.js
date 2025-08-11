@@ -17,6 +17,7 @@ const projectRoutes = require('./routes/project-routes');
 const taskRoutes = require('./routes/task-routes');
 const resetRoutes = require('./routes/password-reset-routes');
 const collaboratorRoutes = require('./routes/collaborator-routes'); // Added collaborator routes
+const invitationRoutes = require('./routes/invitationRoutes');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -43,6 +44,7 @@ app.use('/dashboard', dashboardRoutes);
 app.use('/projects', projectRoutes);
 app.use('/projects', taskRoutes);
 app.use('/projects', collaboratorRoutes); // Mounted collaborator routes on /projects
+app.use('/invitations', invitationRoutes);
 
 // Server Startup
 const startServer = async () => {
