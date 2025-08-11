@@ -24,7 +24,7 @@ router.get('/change-password', controller.getPage);
  * @function
  * @memberof module:routes/password-reset-routes
  * @param {string} path - '/send-code'
- * @param {Function} handler - Controller method to send the verification code email.
+ * @param {Function} handler - Controller method to send the verification code email.   
  */
 router.post('/send-code', controller.sendCode);
 
