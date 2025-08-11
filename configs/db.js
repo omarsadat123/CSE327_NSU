@@ -1,8 +1,31 @@
+<<<<<<< HEAD
 /**
  * @file Database configuration for ProCollab.
  * @module configs/db
  * @description Configures and exports a MySQL connection pool using `mysql2/promise`.
  */
+=======
+// config/db.js
+const mysql = require('mysql2');
+
+const connection = mysql.createConnection({
+  host: 'localhost',      // Your DB host
+  user: 'root',           // Your DB username
+  password: '',           // Your DB password
+  database: 'procollab'   // Your DB name
+});
+
+connection.connect((err) => {
+  if (err) {
+    console.error('Database connection failed:', err.stack);
+    return;
+  }
+  console.log('Connected to MySQL database');
+});
+
+module.exports = connection;
+
+>>>>>>> 8ee198a709fb22b91d8f963cce24d28a9f7fb20b
 
 const mysql = require('mysql2/promise');
 

@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Project Invitations</title>
+  <link rel="stylesheet" href="/css/style.css"> <!-- optional -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="container mt-4">
+
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
+    <div class="container-fluid">
+      <a class="navbar-brand fw-bold" href="#"
+        ><i class="bi bi-diagram-3-fill me-2"></i>ProCollab</a
+      >
+      <div class="collapse navbar-collapse">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item">
+            <a class="nav-link fw-semibold active" href="/dashboard"
+              ><i class="bi bi-speedometer2 me-1"></i>Dashboard</a
+            >
+          </li>
+          <li class="nav-item">
+            <a class="nav-link fw-semibold" href="/logout"
+              ><i class="bi bi-box-arrow-right me-1"></i>Logout</a
+            >
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <h1 class="mb-4">Your Project Invitations</h1>
+
+  <% if (invitations.length === 0) { %>
+    <div class="alert alert-info">
+      You have no pending invitations.
+    </div>
+  <% } else { %>
+    <table class="table table-bordered table-striped">
+      <thead class="table-dark">
+        <tr>
+          <th>Project Name</th>
+          <th>Owner</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% invitations.forEach(invite => { %>
+          <tr>
+            <td><%= invite.project_name %></td>
+            <td><%= invite.owner_name %></td>
+            <td>
+              <form action="/invitations/accept/<%= invite.pid %>" method="POST" style="display:inline;">
+                <button class="btn btn-success btn-sm" type="submit">Accept</button>
+              </form>
+              <form action="/invitations/reject/<%= invite.pid %>" method="POST" style="display:inline;">
+                <button class="btn btn-danger btn-sm" type="submit">Reject</button>
+              </form>
+            </td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  <% } %>
+
+</body>
+</html>
