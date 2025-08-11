@@ -2,30 +2,19 @@
   "name": "cse327_nsu",
   "version": "1.0.0",
   "description": "",
-<<<<<<< HEAD
   "main": "app.js",
-=======
-  "main": "index.js",
->>>>>>> 1e877ea8136e6cd9415faaa00235d7dd47a83f4c
   "directories": {
     "doc": "docs",
     "test": "tests"
   },
   "scripts": {
-<<<<<<< HEAD
-    "test": "echo \"Error: no test specified\" && exit 1"
-=======
     "test": "jest"
->>>>>>> 1e877ea8136e6cd9415faaa00235d7dd47a83f4c
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/omarsadat123/CSE327_NSU.git"
   },
-<<<<<<< HEAD
-=======
   "keywords": [],
->>>>>>> 1e877ea8136e6cd9415faaa00235d7dd47a83f4c
   "author": "",
   "license": "ISC",
   "bugs": {
@@ -33,22 +22,16 @@
   },
   "homepage": "https://github.com/omarsadat123/CSE327_NSU#readme",
   "dependencies": {
-<<<<<<< HEAD
     "bcryptjs": "^3.0.2",
-=======
     "body-parser": "^2.2.0",
->>>>>>> 1e877ea8136e6cd9415faaa00235d7dd47a83f4c
     "ejs": "^3.1.10",
     "express": "^5.1.0",
     "express-session": "^1.18.2",
     "mysql2": "^3.14.3",
     "nodemailer": "^7.0.5"
-<<<<<<< HEAD
-=======
   },
   "devDependencies": {
     "jest": "^30.0.5",
     "jsdoc": "^4.0.4"
->>>>>>> 1e877ea8136e6cd9415faaa00235d7dd47a83f4c
   }
 }

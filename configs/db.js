@@ -1,22 +1,3 @@
-<<<<<<< HEAD
-const mysql = require('mysql2');
-
-const db = mysql.createConnection({
-  host: 'localhost',
-  user: 'root',
-  password: '',
-  database: 'procollab'
-});
-
-db.connect((err) => {
-  if (err) {
-    throw err;
-  }
-  console.log('MySQL connected');
-});
-
-module.exports = db;
-=======
 /**
  * @file Database configuration for ProCollab.
  * @module configs/db
@@ -57,5 +38,15 @@ const dbConfig = {
  */
 const db = mysql.createPool(dbConfig);
 
+// Test the connection
+db.getConnection()
+  .then((connection) => {
+    console.log('MySQL connected');
+    connection.release();
+  })
+  .catch((err) => {
+    console.error('MySQL connection error:', err);
+    throw err;
+  });
+
 module.exports = db;
->>>>>>> 1e877ea8136e6cd9415faaa00235d7dd47a83f4c

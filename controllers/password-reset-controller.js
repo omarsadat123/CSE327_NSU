@@ -6,11 +6,12 @@ exports.getPage = (req, res) => {
   res.render('password-reset', { phase: null, message: null });
 };
 
-exports.sendCode = (req, res) => {
+exports.sendCode = async (req, res) => {
   const { email } = req.body;
 
-  PasswordReset.findUserByEmail(email, (err, results) => {
-    if (err || results.length === 0) {
+  try {
+    const [results] = await PasswordReset.findUserByEmail(email);
+    if (!results || results.length === 0) {
       return res.render('password-reset', { phase: 'email', message: 'Email not found' });
     }
 
@@ -25,17 +26,17 @@ exports.sendCode = (req, res) => {
       verified: false
     };
 
-    transporter.sendMail({
+    await transporter.sendMail({
       to: email,
       subject: 'Your ProCollab Verification Code',
       text: `Your code: ${code}`
-    }, (err2) => {
-      if (err2) {
-        return res.render('password-reset', { phase: 'email', message: 'Failed to send email' });
-      }
-      res.render('password-reset', { phase: 'code', message: null });
     });
-  });
+
+    res.render('password-reset', { phase: 'code', message: null });
+  } catch (err) {
+    console.error(err);
+    res.render('password-reset', { phase: 'email', message: 'Failed to send email or invalid email' });
+  }
 };
 
 exports.verifyCode = (req, res) => {
@@ -54,7 +55,7 @@ exports.verifyCode = (req, res) => {
   res.render('password-reset', { phase: 'password', message: null });
 };
 
-exports.setPassword = (req, res) => {
+exports.setPassword = async (req, res) => {
   const { password, confirm } = req.body;
   const reset = req.session.reset;
 
@@ -66,19 +67,14 @@ exports.setPassword = (req, res) => {
     return res.render('password-reset', { phase: 'password', message: 'Passwords do not match' });
   }
 
-  bcrypt.hash(password, 12, (err, hashed) => {
-    if (err) {
-      return res.render('password-reset', { phase: 'password', message: 'Hashing failed' });
-    }
-
-    PasswordReset.updatePassword(reset.uid, hashed, (err2) => {
-      if (err2) {
-        return res.render('password-reset', { phase: 'password', message: 'Failed to update password' });
-      }
-
-      req.session.destroy(() => {
-        res.render('password-reset', { phase: 'success', message: 'Password updated successfully!' });
-      });
+  try {
+    const hashed = await bcrypt.hash(password, 12);
+    await PasswordReset.updatePassword(reset.uid, hashed);
+    req.session.destroy(() => {
+      res.render('password-reset', { phase: 'success', message: 'Password updated successfully!' });
     });
-  });
+  } catch (err) {
+    console.error(err);
+    res.render('password-reset', { phase: 'password', message: 'Failed to update password' });
+  }
 };
