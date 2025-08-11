@@ -1,4 +1,5 @@
 {
+<<<<<<< HEAD
   "tags": {
     "allowUnknownTags": true
   },
@@ -20,3 +21,21 @@
     "verbose": true
   }
 }
+=======
+  "source": {
+    "include": [
+      "app.js",
+      "models",
+      "controllers",
+      "routes"
+    ],
+    "includePattern": ".js$",
+    "excludePattern": "(node_modules|docs)"
+  },
+  "opts": {
+    "destination": "./docs/jsdoc/",
+    "recurse": true,
+    "template": "node_modules/better-docs"
+  }
+}
+>>>>>>> b74f37dcb03291d8fb3aefccd5ccabdd982e6075

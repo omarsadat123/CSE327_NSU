@@ -1,15 +1,33 @@
 {
   "name": "cse327_nsu",
   "version": "1.0.0",
+<<<<<<< HEAD
   "description": "",
   "main": "index.js",
+=======
+  "description": "A task manager app with Node.js and MySQL following MVC.",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "docs": "jsdoc -c jsdoc.json",
+    "test": "jest"
+  },
+  "dependencies": {
+    "ejs": "^3.1.10",
+    "express": "^4.21.2",
+    "mysql2": "^3.14.3"
+  },
+>>>>>>> b74f37dcb03291d8fb3aefccd5ccabdd982e6075
   "directories": {
     "doc": "docs",
     "test": "tests"
   },
+<<<<<<< HEAD
   "scripts": {
     "test": "jest"
   },
+=======
+>>>>>>> b74f37dcb03291d8fb3aefccd5ccabdd982e6075
   "repository": {
     "type": "git",
     "url": "git+https://github.com/omarsadat123/CSE327_NSU.git"
@@ -21,6 +39,7 @@
     "url": "https://github.com/omarsadat123/CSE327_NSU/issues"
   },
   "homepage": "https://github.com/omarsadat123/CSE327_NSU#readme",
+<<<<<<< HEAD
   "dependencies": {
     "body-parser": "^2.2.0",
     "ejs": "^3.1.10",
@@ -32,5 +51,10 @@
   "devDependencies": {
     "jest": "^30.0.5",
     "jsdoc": "^4.0.4"
+=======
+  "devDependencies": {
+    "jest": "^30.0.5",
+    "supertest": "^7.1.4"
+>>>>>>> b74f37dcb03291d8fb3aefccd5ccabdd982e6075
   }
 }
