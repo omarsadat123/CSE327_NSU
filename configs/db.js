@@ -33,15 +33,12 @@ const dbConfig = {
  * @global
  * @example
  * // Usage in another file:
- * const db = require('./configs/db');
- * const [rows] = await db.query('SELECT * FROM users');
+ * // const db = require('./configs/db');
+ * // const [rows] = await db.query('SELECT * FROM users');
  */
 const db = mysql.createPool(dbConfig);
 
-<<<<<<< HEAD
-module.exports = db;
-=======
-// Test the connection
+// Test the connection on startup
 db.getConnection()
   .then((connection) => {
     console.log('MySQL connected');
@@ -53,4 +50,3 @@ db.getConnection()
   });
 
 module.exports = db;
->>>>>>> 372cb7aacc1dd4aa03b85fb4c69adca967b24e1e

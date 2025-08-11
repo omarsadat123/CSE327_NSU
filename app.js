@@ -1,25 +1,22 @@
 /**
  * @file Main application entry point.
  * @module app
- * @description Configures Express server, middleware, routes, and session management.
+ * @description Configures Express server, middleware, routes, session management, and error handling.
  */
 
 const express = require('express');
 const session = require('express-session');
 const path = require('path');
-<<<<<<< HEAD
+const bodyParser = require('body-parser');
+
+const db = require('./configs/db'); // DB connection
+
 const authRoutes = require('./routes/auth-routes');
 const dashboardRoutes = require('./routes/dashboard-routes');
 const projectRoutes = require('./routes/project-routes');
-const taskRoutes = require('./routes/task-routes'); // from incoming version
-const db = require('./configs/db'); // DB connection
+const taskRoutes = require('./routes/task-routes');
+const resetRoutes = require('./routes/password-reset-routes');
 
-=======
-
-// ======================
-//  Express App Instance
-// ======================
->>>>>>> 372cb7aacc1dd4aa03b85fb4c69adca967b24e1e
 const app = express();
 const PORT = process.env.PORT || 3000;
 
@@ -27,14 +24,8 @@ const PORT = process.env.PORT || 3000;
 // Middleware Setup
 // ======================
 
-<<<<<<< HEAD
 // Session configuration middleware.
-=======
-/**
- * Session configuration middleware.
- * @see {@link https://www.npmjs.com/package/express-session}
- */
->>>>>>> 372cb7aacc1dd4aa03b85fb4c69adca967b24e1e
+// See https://www.npmjs.com/package/express-session
 app.use(
   session({
     secret: 'your_secret_key',
@@ -44,67 +35,39 @@ app.use(
   })
 );
 
-<<<<<<< HEAD
-// Body parsers
-app.use(express.urlencoded({ extended: true }));
-app.use(express.json());
-
-// Static files
-=======
-// ======================
-//  Body Parsing
-// ======================
+// Body Parsing
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
-// ======================
-//  View Engine Setup
-// ======================
-app.set('view engine', 'ejs');
-app.set('views', path.join(__dirname, 'views'));
-
-// ======================
-//  Static Assets
-// ======================
->>>>>>> 372cb7aacc1dd4aa03b85fb4c69adca967b24e1e
-app.use(express.static(path.join(__dirname, 'public')));
-
-// ======================
 // View Engine Setup
-// ======================
-
-<<<<<<< HEAD
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
+
+// Static Assets
+app.use(express.static(path.join(__dirname, 'public')));
 
 // ======================
 // Route Configuration
 // ======================
 
-app.use('/dashboard', dashboardRoutes);
-app.use('/', authRoutes);
-app.use('/projects', projectRoutes);
-app.use('/projects', taskRoutes);  // Mount task routes under /projects
-=======
 // Authentication routes
-const authRoutes = require('./routes/auth-routes');
 app.use('/', authRoutes);
+
+// Password reset routes
+app.use('/', resetRoutes);
 
 // Dashboard routes
-app.use('/dashboard', require('./routes/dashboard-routes'));
+app.use('/dashboard', dashboardRoutes);
 
 // Project routes
-app.use('/projects', require('./routes/project-routes'));
->>>>>>> 372cb7aacc1dd4aa03b85fb4c69adca967b24e1e
+app.use('/projects', projectRoutes);
 
-// Password reset routes (from first snippet)
-const resetRoutes = require('./routes/password-reset-routes');
-app.use('/', resetRoutes);
+// Task routes mounted under /projects
+app.use('/projects', taskRoutes);
 
 // ======================
 // Server Startup
 // ======================
-<<<<<<< HEAD
 
 const startServer = async () => {
   try {
@@ -126,12 +89,6 @@ const startServer = async () => {
 if (require.main === module) {
   startServer();
 }
-=======
-app.listen(3000, () => {
-  console.log('Server running at http://localhost:3000');
-  console.log('Environment:', process.env.NODE_ENV || 'development');
-});
->>>>>>> 372cb7aacc1dd4aa03b85fb4c69adca967b24e1e
 
 // ======================
 // Error Handling
@@ -147,8 +104,5 @@ app.use((err, req, res, next) => {
   console.error(err);
   res.status(500).send('Internal Server Error');
 });
-<<<<<<< HEAD
 
 module.exports = app;
-=======
->>>>>>> 372cb7aacc1dd4aa03b85fb4c69adca967b24e1e
