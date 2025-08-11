@@ -27,7 +27,7 @@ module.exports = {
         return res.render('login', { message: 'Invalid email or password.' });
       }
     } catch (error) {
-      console.error(error);
+      console.error('Login error:', error);
       return res.render('login', { message: 'An error occurred. Please try again.' });
     }
   },

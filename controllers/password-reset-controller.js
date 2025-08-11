@@ -34,7 +34,7 @@ exports.sendCode = async (req, res) => {
 
     res.render('password-reset', { phase: 'code', message: null });
   } catch (err) {
-    console.error(err);
+    console.error('Send code error:', err);
     res.render('password-reset', { phase: 'email', message: 'Failed to send email or invalid email' });
   }
 };
@@ -74,7 +74,7 @@ exports.setPassword = async (req, res) => {
       res.render('password-reset', { phase: 'success', message: 'Password updated successfully!' });
     });
   } catch (err) {
-    console.error(err);
+    console.error('Set password error:', err);
     res.render('password-reset', { phase: 'password', message: 'Failed to update password' });
   }
 };

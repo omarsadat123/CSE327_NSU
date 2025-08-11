@@ -51,8 +51,8 @@
       <div class="card-body p-4">
         <h3 class="fw-bold text-center mb-4">Login</h3>
         <% if (typeof message !== "undefined" && message) { %>
-  <div class="alert alert-danger"><%= message %></div>
-<% } %>
+          <div class="alert alert-danger"><%= message %></div>
+        <% } %>
 
         <form action="/login" method="POST">
           <div class="mb-3">
@@ -82,7 +82,8 @@
           </button>
         </form>
         <p class="text-center mt-3 mb-0">
-          Forgot password? <a href="/password-reset.ejs" class="text-primary fw-semibold">Change password</a>
+          Forgot password? 
+          <a href="/change-password" class="text-primary fw-semibold">Change password</a>
         </p>
       </div>
     </div>
