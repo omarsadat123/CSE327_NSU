@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 /**
  * @file Database configuration for ProCollab.
  * @module configs/db
@@ -40,20 +39,3 @@ const dbConfig = {
 const db = mysql.createPool(dbConfig);
 
 module.exports = db;
-=======
-// config/db.js
-const mysql = require('mysql2/promise');
-
-// MySQL database configuration
-const pool = mysql.createPool({
-  host: 'localhost',
-  user: 'root', // Your XAMPP MySQL username
-  password: '', // Your XAMPP MySQL password
-  database: 'procollab', // The database you created in phpMyAdmin
-  waitForConnections: true,
-  connectionLimit: 10,
-  queueLimit: 0
-});
-
-module.exports = pool;
->>>>>>> b74f37dcb03291d8fb3aefccd5ccabdd982e6075

@@ -1,20 +1,20 @@
-// routes/taskRoutes.js
 const express = require('express');
 const router = express.Router();
-const task_controller = require('../controllers/task-controller');
+const taskController = require('../controllers/task-controller');
 
+// Authentication middleware (can be extracted to a separate file)
+const isAuthenticated = (req, res, next) => {
+  if (req.session.userId) return next();
+  res.redirect('/login');
+};
 
+// List tasks for a project
+router.get('/:projectId/tasks', isAuthenticated, taskController.getTasks);
 
-// Route to get the main page (GET /)
-//router.get('/', task_controller.getTasks);
+// Create a new task for a project
+router.post('/:projectId/tasks/create', isAuthenticated, taskController.createTask);
 
-// Add a NEW route for project-specific tasks
-router.get('/projects/:projectId', task_controller.getTasks);
-
-// Route to create a new task (POST /)
-router.post('/', task_controller.createTask);
-
-router.post('/update-status', task_controller.updateTaskStatus);
-
+// Update task status
+router.post('/tasks/update-status', isAuthenticated, taskController.updateTaskStatus);
 
 module.exports = router;
