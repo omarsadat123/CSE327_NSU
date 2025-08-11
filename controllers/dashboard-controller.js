@@ -7,33 +7,43 @@
 const Dashboard = require('../models/dashboard');
 
 /**
+ * Middleware to ensure the user is authenticated before accessing dashboard.
+ * Can be moved to a separate middleware file if reused elsewhere.
+ */
+function ensureAuthenticated(req, res, next) {
+  if (!req.session.userId) {
+    return res.redirect('/login');
+  }
+  next();
+}
+
+/**
  * Renders the dashboard page with user-specific data.
  * @async
  * @function getDashboard
  * @param {import('express').Request} req - Express request object.
  * @param {Object} req.session - User session data.
  * @param {number} req.session.userId - Authenticated user's ID.
+ * @param {Object} req.session.user - Authenticated user's info (name, email, etc.).
  * @param {import('express').Response} res - Express response object.
  * @returns {Promise<void>}
- * @throws {Error} If data fetching fails.
- * @example
- * // Route definition:
- * router.get('/dashboard', dashboardController.getDashboard);
  */
-exports.getDashboard = async (req, res) => {
+async function getDashboard(req, res) {
   try {
     const userId = req.session.userId;
 
-    // Parallelize data fetching for better performance
+    // If login stored the full user object, we can use it directly
+    // Otherwise, fall back to DB query
+    const user = req.session.user || await Dashboard.getUserById(userId);
+
+    // Fetch all dashboard-related counts and lists in parallel
     const [
-      user,
       projectCounts,
       pendingTasksCount,
       ownedProjects,
       joinedProjects,
       upcomingTasks
     ] = await Promise.all([
-      Dashboard.getUserById(userId),
       Dashboard.getActiveProjectCounts(userId),
       Dashboard.getPendingTasksCount(userId),
       Dashboard.getOwnedProjects(userId),
@@ -55,4 +65,9 @@ exports.getDashboard = async (req, res) => {
       message: 'Failed to load dashboard data' 
     });
   }
+}
+
+module.exports = {
+  ensureAuthenticated,
+  getDashboard
 };

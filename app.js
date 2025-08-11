@@ -8,7 +8,7 @@ const express = require('express');
 const session = require('express-session');
 const bodyParser = require('body-parser');
 const path = require('path');
-
+const authRoutes = require('./routes/auth-routes');
 
 /**
  * Express application instance.
@@ -39,19 +39,6 @@ app.use(
     cookie: { secure: false } // Set to true in production with HTTPS
   })
 );
-
-/**
- * Development authentication bypass middleware.
- * @name use/authBypass
- * @memberof module:app
- * @function
- * @description FOR DEVELOPMENT ONLY - Auto-authenticates as user ID 1
- * @todo Remove in production
- */
-app.use((req, res, next) => {
-  req.session.userId = 1; // Development user ID
-  next();
-});
 
 // ======================
 //  View Engine Setup
@@ -116,15 +103,11 @@ app.use(express.static(path.join(__dirname, 'public')));
 //  Route Configuration
 // ======================
 
-/**
- * Dashboard routes middleware.
- * @name use/dashboardRoutes
- * @memberof module:app
- * @function
- * @param {string} '/dashboard' - Base path for dashboard routes
- * @param {Router} dashboardRoutes - Imported dashboard router
- */
 app.use('/dashboard', require('./routes/dashboard-routes'));
+
+app.use('/', authRoutes);
+
+
 
 /**
  * Project routes middleware.
@@ -157,24 +140,13 @@ app.listen(3000, () => {
 //  Error Handling
 // ======================
 
-/**
- * 404 Error Handler
- * @name use/404
- * @memberof module:app
- * @function
- */
+// For 404 - Not Found
 app.use((req, res) => {
-  res.status(404).render('404');
+  res.status(404).send('404 Not Found');
 });
 
-/**
- * Global Error Handler
- * @name use/error
- * @memberof module:app
- * @function
- * @param {Error} err - Error object
- */
+// For 500 - Internal Server Error
 app.use((err, req, res, next) => {
-  console.error('Global error:', err);
-  res.status(500).render('error', { message: 'Something went wrong!' });
+  console.error(err);
+  res.status(500).send('Internal Server Error');
 });
