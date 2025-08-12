@@ -1,41 +1,30 @@
 {
-<<<<<<< HEAD
   "tags": {
     "allowUnknownTags": true
   },
   "source": {
     "include": [
+      "app.js",
       "controllers",
       "models",
       "routes",
-      "configs",
-      "app.js"
+      "configs"
     ],
     "includePattern": ".+\\.js(doc|x)?$",
-    "excludePattern": "(^|\\/|\\\\)_"
+    "excludePattern": "(node_modules|docs|(^|\\/|\\\\)_)"
   },
   "opts": {
     "encoding": "utf8",
     "destination": "./docs",
     "recurse": true,
-    "verbose": true
-  }
-}
-=======
-  "source": {
-    "include": [
-      "app.js",
-      "models",
-      "controllers",
-      "routes"
-    ],
-    "includePattern": ".js$",
-    "excludePattern": "(node_modules|docs)"
-  },
-  "opts": {
-    "destination": "./docs/jsdoc/",
-    "recurse": true,
+    "verbose": true,
     "template": "node_modules/better-docs"
+  },
+  "plugins": [
+    "plugins/markdown"
+  ],
+  "templates": {
+    "cleverLinks": true,
+    "monospaceLinks": true
   }
 }
->>>>>>> b74f37dcb03291d8fb3aefccd5ccabdd982e6075
