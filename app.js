@@ -42,7 +42,8 @@ app.use('/', authRoutes);
 app.use('/', resetRoutes);
 app.use('/dashboard', dashboardRoutes);
 app.use('/projects', projectRoutes);
-app.use('/projects', taskRoutes);
+app.use('/projects', taskRoutes); // For project-specific task routes, e.g., /projects/:projectId/tasks
+app.use('/tasks', taskRoutes);    // For task-specific routes, e.g., /tasks/update-status
 app.use('/projects', collaboratorRoutes); // Mounted collaborator routes on /projects
 app.use('/invitations', invitationRoutes);
 
