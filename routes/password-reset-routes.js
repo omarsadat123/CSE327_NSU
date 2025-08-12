@@ -1,51 +1,55 @@
 /**
  * @file Password reset routes for ProCollab.
  * @module routes/password-reset-routes
- * @description Defines routes related to password reset functionality including requesting a reset, verifying code, and setting a new password.
+ * @description Defines password reset routes including sending a code, verifying the code, and setting a new password.
  */
 
 const express = require('express');
 const router = express.Router();
-const controller = require('../controllers/password-reset-controller');
+const passwordResetController = require('../controllers/password-reset-controller');
 
 /**
- * Route to render the password reset page.
- * @name GET /change-password
+ * GET - Render password reset page.
+ *
+ * @name GET/change-password
  * @function
  * @memberof module:routes/password-reset-routes
  * @param {string} path - '/change-password'
- * @param {Function} handler - Controller method to render the reset password page.
+ * @param {Function} handler - Controller method to render the reset page.
  */
-router.get('/change-password', controller.getPage);
+router.get('/change-password', passwordResetController.getPage);
 
 /**
- * Route to send a verification code to user's email.
- * @name POST /send-code
+ * POST - Send verification code to email.
+ *
+ * @name POST/send-code
  * @function
  * @memberof module:routes/password-reset-routes
  * @param {string} path - '/send-code'
- * @param {Function} handler - Controller method to send the verification code email.   
+ * @param {Function} handler - Controller method to send verification email.
  */
-router.post('/send-code', controller.sendCode);
+router.post('/send-code', passwordResetController.sendCode);
 
 /**
- * Route to verify the 6-digit verification code.
- * @name POST /verify-code
+ * POST - Verify submitted code.
+ *
+ * @name POST/verify-code
  * @function
  * @memberof module:routes/password-reset-routes
  * @param {string} path - '/verify-code'
- * @param {Function} handler - Controller method to verify the submitted code.
+ * @param {Function} handler - Controller method to verify code.
  */
-router.post('/verify-code', controller.verifyCode);
+router.post('/verify-code', passwordResetController.verifyCode);
 
 /**
- * Route to set a new password after code verification.
- * @name POST /set-new-password
+ * POST - Set new password after verification.
+ *
+ * @name POST/set-new-password
  * @function
  * @memberof module:routes/password-reset-routes
  * @param {string} path - '/set-new-password'
- * @param {Function} handler - Controller method to update the user's password.
+ * @param {Function} handler - Controller method to set a new password.
  */
-router.post('/set-new-password', controller.setPassword);
+router.post('/set-new-password', passwordResetController.setPassword);
 
 module.exports = router;

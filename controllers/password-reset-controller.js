@@ -1,22 +1,51 @@
-const PasswordReset = require('../models/password-reset');
+/**
+ * @file Password reset controller for ProCollab.
+ * @module controllers/password-reset-controller
+ * @description Handles rendering the reset page, sending verification codes, verifying codes, and setting new passwords.
+ */
+
+const PasswordResetModel = require('../models/password-reset');
 const bcrypt = require('bcryptjs');
 const transporter = require('../configs/mailer');
 
-exports.getPage = (req, res) => {
+/**
+ * Renders the password reset page.
+ *
+ * @function getPage
+ * @param {import('express').Request} req - Express request object.
+ * @param {import('express').Response} res - Express response object.
+ * @returns {void}
+ */
+const getPage = (req, res) => {
   res.render('password-reset', { phase: null, message: null });
 };
 
-exports.sendCode = async (req, res) => {
+/**
+ * Sends a 6-digit verification code to the user's email address.
+ *
+ * @async
+ * @function sendCode
+ * @param {import('express').Request} req - Express request object.
+ * @param {Object} req.body - Request body data.
+ * @param {string} req.body.email - User's email address.
+ * @param {import('express').Response} res - Express response object.
+ * @returns {Promise<void>}
+ */
+const sendCode = async (req, res) => {
   const { email } = req.body;
 
   try {
-    const [results] = await PasswordReset.findUserByEmail(email);
-    if (!results || results.length === 0) {
-      return res.render('password-reset', { phase: 'email', message: 'Email not found' });
+    const [results] = await PasswordResetModel.findUserByEmail(email);
+
+    if (!results?.length) {
+      return res.render('password-reset', {
+        phase: 'email',
+        message: 'Email not found'
+      });
     }
 
     const code = Math.floor(100000 + Math.random() * 900000).toString();
-    const expires = Date.now() + 10 * 60 * 1000;
+    const expires = Date.now() + 10 * 60 * 1000; // 10 minutes
 
     req.session.reset = {
       uid: results[0].uid,
@@ -29,52 +58,103 @@ exports.sendCode = async (req, res) => {
     await transporter.sendMail({
       to: email,
       subject: 'Your ProCollab Verification Code',
-      text: `Your code: ${code}`
+      text: `Your verification code is: ${code}`
     });
 
     res.render('password-reset', { phase: 'code', message: null });
-  } catch (err) {
-    console.error('Send code error:', err);
-    res.render('password-reset', { phase: 'email', message: 'Failed to send email or invalid email' });
+  } catch (error) {
+    console.error('Send code error:', error);
+    res.render('password-reset', {
+      phase: 'email',
+      message: 'Failed to send email or invalid email'
+    });
   }
 };
 
-exports.verifyCode = (req, res) => {
+/**
+ * Verifies the entered code against the stored session data.
+ *
+ * @function verifyCode
+ * @param {import('express').Request} req - Express request object.
+ * @param {Object} req.body - Request body data.
+ * @param {string} req.body.code - 6-digit verification code.
+ * @param {import('express').Response} res - Express response object.
+ * @returns {void}
+ */
+const verifyCode = (req, res) => {
   const { code } = req.body;
   const data = req.session.reset;
 
   if (!data || Date.now() > data.expires) {
-    return res.render('password-reset', { phase: 'email', message: 'Session expired' });
+    return res.render('password-reset', {
+      phase: 'email',
+      message: 'Session expired'
+    });
   }
 
   if (code !== data.code) {
-    return res.render('password-reset', { phase: 'code', message: 'Invalid code' });
+    return res.render('password-reset', {
+      phase: 'code',
+      message: 'Invalid code'
+    });
   }
 
   req.session.reset.verified = true;
   res.render('password-reset', { phase: 'password', message: null });
 };
 
-exports.setPassword = async (req, res) => {
+/**
+ * Updates the user's password if verification is complete.
+ *
+ * @async
+ * @function setPassword
+ * @param {import('express').Request} req - Express request object.
+ * @param {Object} req.body - Request body data.
+ * @param {string} req.body.password - New password.
+ * @param {string} req.body.confirm - Confirm password.
+ * @param {import('express').Response} res - Express response object.
+ * @returns {Promise<void>}
+ */
+const setPassword = async (req, res) => {
   const { password, confirm } = req.body;
   const reset = req.session.reset;
 
-  if (!reset || !reset.verified) {
-    return res.render('password-reset', { phase: 'email', message: 'Unauthorized access' });
+  if (!reset?.verified) {
+    return res.render('password-reset', {
+      phase: 'email',
+      message: 'Unauthorized access'
+    });
   }
 
   if (password !== confirm) {
-    return res.render('password-reset', { phase: 'password', message: 'Passwords do not match' });
+    return res.render('password-reset', {
+      phase: 'password',
+      message: 'Passwords do not match'
+    });
   }
 
   try {
     const hashed = await bcrypt.hash(password, 12);
-    await PasswordReset.updatePassword(reset.uid, hashed);
+    await PasswordResetModel.updatePassword(reset.uid, hashed);
+
     req.session.destroy(() => {
-      res.render('password-reset', { phase: 'success', message: 'Password updated successfully!' });
+      res.render('password-reset', {
+        phase: 'success',
+        message: 'Password updated successfully!'
+      });
     });
-  } catch (err) {
-    console.error('Set password error:', err);
-    res.render('password-reset', { phase: 'password', message: 'Failed to update password' });
+  } catch (error) {
+    console.error('Set password error:', error);
+    res.render('password-reset', {
+      phase: 'password',
+      message: 'Failed to update password'
+    });
   }
+};
+
+module.exports = {
+  getPage,
+  sendCode,
+  verifyCode,
+  setPassword
 };
