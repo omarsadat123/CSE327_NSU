@@ -2,44 +2,45 @@ const db = require('../configs/db');
 const bcrypt = require('bcryptjs');
 
 module.exports = {
-  /**
-   * Find user by email and verify password
-   * @param {string} email - User email
-   * @param {string} plainPassword - Raw password entered by user
-   * @returns {object|null} - User object if valid, else null
-   */
-  async findUserByEmailAndPassword(email, plainPassword) {
-    // Step 1: Find user by email
-    const [userRows] = await db.query(
-      'SELECT uid, name, email FROM users WHERE email = ?',
-      [email]
-    );
+  async findUserByEmail(email) {
+    const [rows] = await db.query('SELECT uid, name, email FROM users WHERE email = ?', [email]);
+    return rows.length ? rows[0] : null;
+  },
 
-    if (userRows.length === 0) {
-      return null; // Email not found
-    }
+  async findUserByEmailAndPassword(email, plainPassword) {
+    const [userRows] = await db.query('SELECT uid, name, email FROM users WHERE email = ?', [email]);
+    if (userRows.length === 0) return null;
 
     const user = userRows[0];
 
-    // Step 2: Fetch hashed password from credentials table
-    const [credRows] = await db.query(
-      'SELECT password FROM credentials WHERE uid = ?',
-      [user.uid]
-    );
-
-    if (credRows.length === 0) {
-      return null; // Credentials not found
-    }
+    const [credRows] = await db.query('SELECT password FROM credentials WHERE uid = ?', [user.uid]);
+    if (credRows.length === 0) return null;
 
     const hashedPassword = credRows[0].password;
-
-    // Step 3: Compare entered password with stored bcrypt hash
     const isMatch = await bcrypt.compare(plainPassword, hashedPassword);
-    if (!isMatch) {
-      return null; // Password mismatch
-    }
+    if (!isMatch) return null;
 
-    // Step 4: Return user info on successful login
     return user;
-  }
+  },
+
+  async createUserWithCredentials(name, email, hashedPassword) {
+    const conn = await db.getConnection();
+    try {
+      await conn.beginTransaction();
+
+      const [userResult] = await conn.query('INSERT INTO users (name, email) VALUES (?, ?)', [name, email]);
+      const uid = userResult.insertId;
+
+      await conn.query('INSERT INTO credentials (uid, password) VALUES (?, ?)', [uid, hashedPassword]);
+
+      await conn.commit();
+
+      return { uid, name, email };
+    } catch (err) {
+      await conn.rollback();
+      throw err;
+    } finally {
+      conn.release();
+    }
+  },
 };

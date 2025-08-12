@@ -1,12 +1,21 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Signup - ProCollab</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Signup - ProCollab</title>
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+    rel="stylesheet"
+  />
+  <link
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"
+  />
 </head>
-<body class="bg-light">
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
+<body>
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm">
     <div class="container-fluid">
       <a class="navbar-brand fw-bold" href="/">
         <i class="bi bi-diagram-3-fill me-2"></i>ProCollab
@@ -22,12 +31,12 @@
       <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav ms-auto">
           <li class="nav-item">
-            <a class="nav-link fw-semibold active" href="/login">
+            <a class="nav-link fw-semibold" href="/login">
               <i class="bi bi-box-arrow-in-right me-1"></i>Login
             </a>
           </li>
           <li class="nav-item">
-            <a class="nav-link fw-semibold" href="/signup">
+            <a class="nav-link fw-semibold active" href="/signup">
               <i class="bi bi-person-plus-fill me-1"></i>Signup
             </a>
           </li>
@@ -36,47 +45,86 @@
     </div>
   </nav>
 
-<div class="container mt-5">
-    <div class="row justify-content-center">
-        <div class="col-md-5">
-            <div class="card shadow-sm">
-                <div class="card-body">
-                    <h3 class="card-title text-center mb-4">Signup</h3>
+  <div class="container mt-5" style="max-width: 450px;">
+    <div class="card shadow-sm border-0 rounded-3">
+      <div class="card-body p-4">
+        <h3 class="fw-bold text-center mb-4">Signup</h3>
 
-                    <% if (typeof error !== 'undefined') { %>
-                        <div class="alert alert-danger"><%= error %></div>
-                    <% } %>
+        <% if (typeof errors !== 'undefined' && errors.length > 0) { %>
+          <div class="alert alert-danger">
+            <ul class="mb-0">
+              <% errors.forEach(error => { %>
+                <li><%= error %></li>
+              <% }) %>
+            </ul>
+          </div>
+        <% } %>
 
-                    <form action="/signup" method="POST">
-                        <div class="mb-3">
-                            <label class="form-label">Full Name</label>
-                            <input type="text" name="name" class="form-control" maxlength="100" required>
-                        </div>
+        <form action="/signup" method="POST" novalidate>
+          <div class="mb-3">
+            <label for="name" class="form-label">Full Name</label>
+            <input
+              type="text"
+              name="name"
+              id="name"
+              class="form-control"
+              maxlength="100"
+              value="<%= typeof formData !== 'undefined' ? formData.name : '' %>"
+              required
+            />
+          </div>
 
-                        <div class="mb-3">
-                            <label class="form-label">Email</label>
-                            <input type="email" name="email" class="form-control" maxlength="100" required>
-                        </div>
+          <div class="mb-3">
+            <label for="email" class="form-label">Email address</label>
+            <input
+              type="email"
+              name="email"
+              id="email"
+              class="form-control"
+              value="<%= typeof formData !== 'undefined' ? formData.email : '' %>"
+              required
+            />
+          </div>
 
-                        <div class="mb-3">
-                            <label class="form-label">Password</label>
-                            <input type="password" name="password" class="form-control" minlength="6" required>
-                        </div>
+          <div class="mb-3">
+            <label for="password" class="form-label">Password</label>
+            <input
+              type="password"
+              name="password"
+              id="password"
+              class="form-control"
+              minlength="6"
+              required
+            />
+          </div>
 
-                        <div class="mb-3">
-                            <label class="form-label">Confirm Password</label>
-                            <input type="password" name="confirmPassword" class="form-control" minlength="6" required>
-                        </div>
+          <div class="mb-3">
+            <label for="confirmPassword" class="form-label">Confirm Password</label>
+            <input
+              type="password"
+              name="confirmPassword"
+              id="confirmPassword"
+              class="form-control"
+              minlength="6"
+              required
+            />
+          </div>
 
-                        <button type="submit" class="btn btn-primary w-100">Signup</button>
-                    </form>
+          <button type="submit" class="btn btn-primary w-100 fw-bold">
+            Signup
+          </button>
+        </form>
 
-                    
-                </div>
-            </div>
-        </div>
+        <p class="text-center mt-3 mb-0">
+          Already have an account? 
+          <a href="/login" class="text-primary fw-semibold">Login</a>
+        </p>
+      </div>
     </div>
-</div>
+  </div>
 
+  <script
+    src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+  ></script>
 </body>
 </html>
