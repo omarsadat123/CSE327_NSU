@@ -1,25 +1,54 @@
+/**
+ * Authentication Controller
+ * Handles login, signup, OTP verification, and logout functionalities.
+ * 
+ * @module controllers/auth.controller
+ */
+
 const authModel = require('../models/auth');
 const bcrypt = require('bcryptjs');
 const nodemailer = require('nodemailer');
 
+/**
+ * Nodemailer transporter configuration for Gmail.
+ * @constant
+ */
 const transporter = nodemailer.createTransport({
   service: 'gmail',
   auth: {
-    user: 'mahfuzurrahman594@gmail.com',        // <-- put your email here
-    pass: 'uyrzketvbmwbioco',     // <-- put your app password here
+    user: 'mahfuzurrahman594@gmail.com', // <-- Replace with your email
+    pass: 'uyrzketvbmwbioco', // <-- Replace with your app password
   },
 });
 
+/**
+ * Generates a 6-digit OTP.
+ * 
+ * @returns {string} A 6-digit OTP as a string.
+ */
 function generateOtp() {
   return Math.floor(100000 + Math.random() * 900000).toString();
 }
 
 module.exports = {
+  /**
+   * Renders the login page.
+   * 
+   * @param {object} req - Express request object.
+   * @param {object} res - Express response object.
+   */
   showLoginPage(req, res) {
     if (req.session.userId) return res.redirect('/dashboard');
     res.render('login', { message: null });
   },
 
+  /**
+   * Handles user login.
+   * 
+   * @async
+   * @param {object} req - Express request object.
+   * @param {object} res - Express response object.
+   */
   async login(req, res) {
     const { email, password } = req.body;
     try {
@@ -28,17 +57,22 @@ module.exports = {
         req.session.userId = user.uid;
         req.session.user = { uid: user.uid, name: user.name, email: user.email };
         return res.redirect('/dashboard');
-      } else {
-        return res.render('login', { message: 'Invalid email or password.' });
       }
-    } catch (e) {
-      console.error(e);
+      return res.render('login', { message: 'Invalid email or password.' });
+    } catch (error) {
+      console.error(error);
       return res.render('login', { message: 'An error occurred. Please try again.' });
     }
   },
 
+  /**
+   * Logs out the current user.
+   * 
+   * @param {object} req - Express request object.
+   * @param {object} res - Express response object.
+   */
   logout(req, res) {
-    req.session.destroy(err => {
+    req.session.destroy((err) => {
       if (err) {
         console.error(err);
         return res.redirect('/dashboard');
@@ -48,11 +82,24 @@ module.exports = {
     });
   },
 
+  /**
+   * Renders the signup page.
+   * 
+   * @param {object} req - Express request object.
+   * @param {object} res - Express response object.
+   */
   showSignupPage(req, res) {
     if (req.session.userId) return res.redirect('/dashboard');
     res.render('signup', { errors: [], formData: {} });
   },
 
+  /**
+   * Handles user signup and sends OTP.
+   * 
+   * @async
+   * @param {object} req - Express request object.
+   * @param {object} res - Express response object.
+   */
   async handleSignup(req, res) {
     if (req.session.userId) return res.redirect('/dashboard');
 
@@ -60,6 +107,7 @@ module.exports = {
     const errors = [];
     const formData = { name, email };
 
+    // Validate input
     if (!name || name.trim() === '') errors.push('Full Name is required.');
     else if (name.length > 100) errors.push('Full Name cannot exceed 100 characters.');
 
@@ -85,25 +133,38 @@ module.exports = {
       req.session.otp = otp;
 
       await transporter.sendMail({
-        from: '"ProCollab" <your-email@gmail.com>',  // same as above
+        from: '"ProCollab" <your-email@gmail.com>',
         to: email,
         subject: 'Your ProCollab Signup OTP',
         text: `Your OTP for ProCollab signup is: ${otp}`,
       });
 
       return res.redirect('/verify-otp');
-    } catch (err) {
-      console.error(err);
+    } catch (error) {
+      console.error(error);
       errors.push('An error occurred during signup. Please try again.');
       return res.render('signup', { errors, formData });
     }
   },
 
+  /**
+   * Displays the OTP verification page.
+   * 
+   * @param {object} req - Express request object.
+   * @param {object} res - Express response object.
+   */
   showOtpPage(req, res) {
     if (!req.session.signupData) return res.redirect('/signup');
     res.render('verify-otp', { error: null, email: req.session.signupData.email });
   },
 
+  /**
+   * Handles OTP verification and user account creation.
+   * 
+   * @async
+   * @param {object} req - Express request object.
+   * @param {object} res - Express response object.
+   */
   async handleOtpVerification(req, res) {
     const { otp } = req.body;
     if (!req.session.signupData || !req.session.otp) return res.redirect('/signup');
@@ -128,8 +189,8 @@ module.exports = {
       req.session.user = { uid: newUser.uid, name: newUser.name, email: newUser.email };
 
       return res.redirect('/dashboard');
-    } catch (err) {
-      console.error(err);
+    } catch (error) {
+      console.error(error);
       return res.render('verify-otp', {
         error: 'Failed to create account. Please signup again.',
         email,
