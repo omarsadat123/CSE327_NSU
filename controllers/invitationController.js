@@ -1,69 +1,45 @@
 // controllers/invitationController.js
 const Invitation = require('../models/invitation');
 
-/**
- * Show all invitations for the logged-in user
- */
-exports.viewInvitations = (req, res) => {
-  if (!req.session || !req.session.userId) {
-    return res.redirect('/login'); // Must be logged in
-  }
-
-  const uid = req.session.userId;
-
-  Invitation.getInvitationsByUserId(uid, (err, invitations) => {
-    if (err) {
-      console.error(err);
-      return res.status(500).send('Server error');
+exports.viewInvitations = async (req, res) => {
+  try {
+    if (!req.session || !req.session.userId) {
+      return res.redirect('/login');
     }
-
+    const invitations = await Invitation.getInvitationsByUserId(req.session.userId);
     res.render('invitations', {
-      invitations, // Pass invitation list to the view
-      user: req.session.user
+      invitations,
+      user: req.session.user,
     });
-  });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Server error');
+  }
 };
 
-/**
- * Accept an invitation
- */
-exports.acceptInvitation = (req, res) => {
-  if (!req.session || !req.session.userId) {
-    return res.redirect('/login');
-  }
-
-  const uid = req.session.userId;
-  const pid = req.params.pid;
-
-  Invitation.acceptInvitation(uid, pid, (err, result) => {
-    if (err) {
-      console.error(err);
-      return res.status(500).send('Server error');
+exports.acceptInvitation = async (req, res) => {
+  try {
+    if (!req.session || !req.session.userId) {
+      return res.redirect('/login');
     }
-
-    req.flash('success', 'You have successfully joined the project.');
+    await Invitation.acceptInvitation(req.session.userId, req.params.pid);
+    // Optionally, you can use flash or query param for messages
     res.redirect('/invitations');
-  });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Server error');
+  }
 };
 
-/**
- * Reject an invitation
- */
-exports.rejectInvitation = (req, res) => {
-  if (!req.session || !req.session.userId) {
-    return res.redirect('/login');
-  }
-
-  const uid = req.session.userId;
-  const pid = req.params.pid;
-
-  Invitation.rejectInvitation(uid, pid, (err, result) => {
-    if (err) {
-      console.error(err);
-      return res.status(500).send('Server error');
+exports.rejectInvitation = async (req, res) => {
+  try {
+    if (!req.session || !req.session.userId) {
+      return res.redirect('/login');
     }
-
-    req.flash('info', 'You have declined the invitation.');
+    await Invitation.rejectInvitation(req.session.userId, req.params.pid);
     res.redirect('/invitations');
-  });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Server error');
+  }
 };
