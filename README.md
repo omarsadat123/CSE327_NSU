@@ -41,6 +41,7 @@ Make sure you have installed:
 - **Node.js** (v18 or later recommended)
 - **MySQL** (running locally or on a server)
 - **npm** (comes with Node.js)
+- **Create database("procollab") and place this folder under htdocs of XAMPP**
 
 ---
 
