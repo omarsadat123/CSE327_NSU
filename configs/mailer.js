@@ -1,3 +1,6 @@
+/**
+ * Gmail transporter configuration for nodemailer
+ */
 const nodemailer = require('nodemailer');
 
 const transporter = nodemailer.createTransport({

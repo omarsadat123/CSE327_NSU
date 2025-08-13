@@ -1,15 +1,11 @@
 /**
- * @file Database configuration for ProCollab.
+ * @file MySQL database configuration
  * @module configs/db
- * @description Configures and exports a MySQL connection pool using `mysql2/promise`.
  */
 
 const mysql = require('mysql2/promise');
 
-/**
- * MySQL connection pool configuration.
- * @type {Object}
- */
+// Database connection pool configuration
 const dbConfig = {
   host: 'localhost',
   user: 'root',
@@ -17,16 +13,13 @@ const dbConfig = {
   database: 'procollab',
   waitForConnections: true,
   connectionLimit: 10,
-  queueLimit: 0,
+  queueLimit: 0
 };
 
-/**
- * MySQL connection pool instance.
- * @type {import('mysql2/promise').Pool}
- */
+// Create connection pool
 const db = mysql.createPool(dbConfig);
 
-// Test the connection on startup
+// Verify connection on startup
 db.getConnection()
   .then((connection) => {
     console.log('MySQL connected');
