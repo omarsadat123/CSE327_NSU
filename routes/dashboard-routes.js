@@ -17,7 +17,9 @@ const dashboardController = require('../controllers/dashboard-controller');
  * @param {function} next - Next middleware
  */
 const isAuthenticated = (req, res, next) => {
-  if (req.session.userId) return next();
+  if (req.session.userId) {
+    return next();
+  }
   res.redirect('/login');
 };
 

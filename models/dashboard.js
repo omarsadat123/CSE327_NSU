@@ -14,7 +14,7 @@ module.exports = {
    */
   async getUserById(userId) {
     const [rows] = await db.query(
-      'SELECT name FROM users WHERE uid = ?', 
+      'SELECT name FROM users WHERE uid = ?',
       [userId]
     );
     return rows[0];

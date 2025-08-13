@@ -29,7 +29,9 @@ const createProject = async (req, res) => {
     } = req.body;
 
     if (!name || !visibility) {
-      return res.status(400).json({ error: 'Name and visibility are required' });
+      return res
+        .status(400)
+        .json({ error: 'Name and visibility are required' });
     }
 
     await Project.create({ name, description, visibility, status, userId });

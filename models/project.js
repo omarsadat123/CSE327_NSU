@@ -20,7 +20,13 @@ class Project {
    * @param {number} params.userId - Creator's user ID
    * @returns {number} New project ID
    */
-  static async create({ name, description = '', visibility, status = 'active', userId }) {
+  static async create({
+    name,
+    description = '',
+    visibility,
+    status = 'active',
+    userId
+  }) {
     const [result] = await db.execute(
       `INSERT INTO projects (name, description, visibility, status)
        VALUES (?, ?, ?, ?)`,

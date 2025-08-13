@@ -1,38 +1,29 @@
 /**
- * @file Password reset database model for ProCollab.
+ * @file Password reset database model for ProCollab
  * @module models/password-reset
- * @description Handles database queries related to password reset, including user lookup and password updates.
+ * @description Handles DB queries for password reset: finding users and updating passwords
  */
 
 const db = require('../configs/db');
 
 /**
- * Finds a user by their email address.
+ * Find a user by email.
  *
  * @async
- * @function findUserByEmail
- * @param {string} email - The user's email address.
- * @returns {Promise<[Array, Array]>} Promise resolving to a tuple: first element is result rows, second is metadata.
- * @throws {Error} If the database query fails.
- * @example
- * const [results] = await findUserByEmail('user@example.com');
- * if (results.length) console.log(results[0].uid);
+ * @param {string} email - User's email
+ * @returns {Promise} Resolves to [results, metadata]
  */
 const findUserByEmail = (email) => {
   return db.query('SELECT uid FROM users WHERE email = ?', [email]);
 };
 
 /**
- * Updates the password hash for a specific user ID.
+ * Update password for a user.
  *
  * @async
- * @function updatePassword
- * @param {number} uid - Unique user ID.
- * @param {string} hashedPassword - The bcrypt hashed password.
- * @returns {Promise<[Object, Array]>} Promise resolving to the update query result and metadata.
- * @throws {Error} If the database query fails.
- * @example
- * await updatePassword(123, '$2a$12$hash...');
+ * @param {number} uid - User ID
+ * @param {string} hashedPassword - Hashed password
+ * @returns {Promise} Resolves to [result, metadata]
  */
 const updatePassword = (uid, hashedPassword) => {
   return db.query(
