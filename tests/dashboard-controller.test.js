@@ -100,7 +100,7 @@ describe('Dashboard Controller', () => {
 
       expect(res.status).toHaveBeenCalledWith(500);
       expect(res.render).toHaveBeenCalledWith('error', expect.objectContaining({
-        message: 'Failed to load dashboard data'
+        message: 'Failed to load dashboard'
       }));
     });
   });
