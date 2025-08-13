@@ -1,33 +1,29 @@
 /**
- * @file Dashboard data model for ProCollab.
+ * @file Dashboard data model for ProCollab
  * @module models/dashboard
- * @description Provides methods for fetching dashboard-related data (projects, tasks, user stats).
+ * @description Handles database operations for dashboard data
  */
 
 const db = require('../configs/db');
 
 module.exports = {
   /**
-   * Fetches a user's basic details by ID.
-   * @async
-   * @param {number} userId - The user's unique ID.
-   * @returns {Promise<{name: string}>} Object containing the user's name.
-   * @throws {Error} If database query fails.
-   * @example
-   * const user = await dashboard.getUserById(123);
-   * console.log(user.name); // "John Doe"
+   * Gets user details by ID
+   * @param {number} userId - User ID
+   * @returns {object} User object with name
    */
   async getUserById(userId) {
-    const [rows] = await db.query('SELECT name FROM users WHERE uid = ?', [userId]);
+    const [rows] = await db.query(
+      'SELECT name FROM users WHERE uid = ?', 
+      [userId]
+    );
     return rows[0];
   },
 
   /**
-   * Counts active projects owned/joined by a user.
-   * @async
-   * @param {number} userId - The user's unique ID.
-   * @returns {Promise<{owned: number, joined: number}>} Counts of owned/joined active projects.
-   * @throws {Error} If database query fails.
+   * Counts user's active projects
+   * @param {number} userId - User ID
+   * @returns {object} Counts of owned and joined projects
    */
   async getActiveProjectCounts(userId) {
     const [[owned]] = await db.query(
@@ -35,7 +31,7 @@ module.exports = {
        FROM projects p
        JOIN participates pa ON p.pid = pa.pid
        WHERE pa.uid = ? AND pa.role = 'Owner'
-       AND p.status = 'active'`,
+         AND p.status = 'active'`,
       [userId]
     );
 
@@ -44,7 +40,7 @@ module.exports = {
        FROM projects p
        JOIN participates pa ON p.pid = pa.pid
        WHERE pa.uid = ? AND pa.role = 'Member'
-       AND p.status = 'active'`,
+         AND p.status = 'active'`,
       [userId]
     );
 
@@ -52,11 +48,9 @@ module.exports = {
   },
 
   /**
-   * Counts pending tasks assigned to a user.
-   * @async
-   * @param {number} userId - The user's unique ID.
-   * @returns {Promise<number>} Count of pending tasks.
-   * @throws {Error} If database query fails.
+   * Counts user's pending tasks
+   * @param {number} userId - User ID
+   * @returns {number} Count of pending tasks
    */
   async getPendingTasksCount(userId) {
     const [[count]] = await db.query(
@@ -70,11 +64,9 @@ module.exports = {
   },
 
   /**
-   * Lists projects owned by a user.
-   * @async
-   * @param {number} userId - The user's unique ID.
-   * @returns {Promise<Array<{pid: number, name: string}>>} Array of project objects.
-   * @throws {Error} If database query fails.
+   * Gets projects owned by user
+   * @param {number} userId - User ID
+   * @returns {array} List of project objects (id, name)
    */
   async getOwnedProjects(userId) {
     const [rows] = await db.query(
@@ -89,11 +81,9 @@ module.exports = {
   },
 
   /**
-   * Lists projects joined by a user (with owner names).
-   * @async
-   * @param {number} userId - The user's unique ID.
-   * @returns {Promise<Array<{pid: number, name: string, owner_name: string}>>} Array of project objects.
-   * @throws {Error} If database query fails.
+   * Gets projects user has joined
+   * @param {number} userId - User ID
+   * @returns {array} List of project objects (id, name, owner)
    */
   async getJoinedProjects(userId) {
     const [rows] = await db.query(
@@ -110,11 +100,9 @@ module.exports = {
   },
 
   /**
-   * Lists upcoming tasks assigned to a user (sorted by deadline).
-   * @async
-   * @param {number} userId - The user's unique ID.
-   * @returns {Promise<Array<{tid: number, task_name: string, deadline: string, project_name: string, pid: number}>>} Array of task objects.
-   * @throws {Error} If database query fails.
+   * Gets user's upcoming tasks
+   * @param {number} userId - User ID
+   * @returns {array} List of task objects (id, name, deadline, project)
    */
   async getUpcomingTasks(userId) {
     const [rows] = await db.execute(

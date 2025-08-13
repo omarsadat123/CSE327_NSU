@@ -1,54 +1,104 @@
+// tests/project-controller.test.js
+
+const projectController = require('../controllers/project-controller');
+
+// Explicit mock for the Project model
+jest.mock('../models/project', () => ({
+  create: jest.fn()
+}));
+
 const Project = require('../models/project');
-const { createProject } = require('../controllers/project-controller');
 
-jest.mock('../models/project');
+describe('Project Controller', () => {
+  let req;
+  let res;
 
-describe('createProject', () => {
-  let req, res;
+  // Suppress console.error and console.log during tests
+  const originalConsoleError = console.error;
+  const originalConsoleLog = console.log;
+
+  beforeAll(() => {
+    console.error = jest.fn();
+    console.log = jest.fn();
+  });
+
+  afterAll(() => {
+    console.error = originalConsoleError;
+    console.log = originalConsoleLog;
+  });
 
   beforeEach(() => {
     req = {
-      session: { userId: 1 },
-      body: {
-        name: 'Test Project',
-        description: 'This is a test project',
-        visibility: 'public',
-        status: 'active'
-      }
+      session: {},
+      body: {}
     };
 
     res = {
       redirect: jest.fn(),
       status: jest.fn().mockReturnThis(),
-      send: jest.fn()
+      json: jest.fn(),
+      render: jest.fn()
     };
-  });
 
-  afterEach(() => {
+    // Reset all mocks between tests
     jest.clearAllMocks();
   });
 
-  it('should create a new project and redirect to /dashboard', async () => {
-    Project.create.mockResolvedValue({ id: 1, ...req.body });
+  describe('createProject', () => {
+    it('should redirect to dashboard after successful creation', async () => {
+      req.session.userId = 1;
+      req.body = {
+        name: 'New Project',
+        visibility: 'public',
+        description: 'Test description',
+        status: 'active'
+      };
 
-    await createProject(req, res);
+      Project.create.mockResolvedValue();
 
-    expect(Project.create).toHaveBeenCalledWith({
-      ...req.body,
-      userId: 1
+      await projectController.createProject(req, res);
+
+      expect(Project.create).toHaveBeenCalledWith({
+        name: 'New Project',
+        description: 'Test description',
+        visibility: 'public',
+        status: 'active',
+        userId: 1
+      });
+
+      expect(res.redirect).toHaveBeenCalledWith('/dashboard');
     });
 
-    expect(res.redirect).toHaveBeenCalledWith('/dashboard');
-  });
+    it('should return 400 if name or visibility is missing', async () => {
+      req.body = { name: '', visibility: '' };
 
-  it('should return 500 if project creation fails', async () => {
-    const error = new Error('DB error');
-    Project.create.mockRejectedValue(error);
+      await projectController.createProject(req, res);
 
-    await createProject(req, res);
+      expect(res.status).toHaveBeenCalledWith(400);
+      expect(res.json).toHaveBeenCalledWith({
+        error: 'Name and visibility are required'
+      });
+      expect(Project.create).not.toHaveBeenCalled();
+    });
 
-    expect(Project.create).toHaveBeenCalled();
-    expect(res.status).toHaveBeenCalledWith(500);
-    expect(res.send).toHaveBeenCalledWith('Error creating project');
+    it('should render error page on creation failure', async () => {
+      req.session.userId = 1;
+      req.body = {
+        name: 'Fail Project',
+        visibility: 'private'
+      };
+
+      Project.create.mockRejectedValue(new Error('DB error'));
+
+      await projectController.createProject(req, res);
+
+      expect(res.status).toHaveBeenCalledWith(500);
+      expect(res.render).toHaveBeenCalledWith(
+        'error',
+        expect.objectContaining({
+          message: 'Project creation failed. Please try again.'
+        })
+      );
+    });
   });
 });

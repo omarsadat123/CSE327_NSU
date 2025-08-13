@@ -94,18 +94,32 @@
     
 
     
-        <h3 class="subsection-title">Members</h3>
+
+    
+        <h3 class="subsection-title">Methods</h3>
 
         
             
-<h4 class="name" id="db"><span class="type-signature">(constant) </span>db<span class="type-signature"></span></h4>
 
+    
+
+    
+    <h4 class="name" id="acceptInvitation"><span class="type-signature">(async) </span>acceptInvitation<span class="signature">()</span><span class="type-signature"></span></h4>
+    
+
+    
 
 
 
 <div class="description">
-    MySQL connection pool instance.
+    Accept invitation — update role from 'invited' to 'member'
 </div>
+
+
+
+
+
+
 
 
 
@@ -142,7 +156,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="configs_db.js.html">configs/db.js</a>, <a href="configs_db.js.html#line39">line 39</a>
+        <a href="models_invitation.js.html">models/invitation.js</a>, <a href="models_invitation.js.html#line28">line 28</a>
     </li></ul></dd>
     
 
@@ -157,15 +171,198 @@
 
 
 
-    <h5>Example</h5>
-    
-    <pre class="prettyprint"><code>// Usage in another file:const db = require('./configs/db');const [rows] = await db.query('SELECT * FROM users');</code></pre>
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
         
+            
+
     
 
+    
+    <h4 class="name" id="getInvitationsByUserId"><span class="type-signature">(async) </span>getInvitationsByUserId<span class="signature">()</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Get all invitations for a given user ID where role = 'invited'.
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="models_invitation.js.html">models/invitation.js</a>, <a href="models_invitation.js.html#line7">line 7</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+            
+
+    
+
+    
+    <h4 class="name" id="rejectInvitation"><span class="type-signature">(async) </span>rejectInvitation<span class="signature">()</span><span class="type-signature"></span></h4>
+    
+
+    
+
+
+
+<div class="description">
+    Reject invitation — delete row from participates table
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="models_invitation.js.html">models/invitation.js</a>, <a href="models_invitation.js.html#line42">line 42</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
     
 
     
@@ -181,13 +378,13 @@
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-configs_db.html">configs/db</a></li><li><a href="module-controllers_dashboard-controller.html">controllers/dashboard-controller</a></li><li><a href="module-controllers_project-controller.html">controllers/project-controller</a></li><li><a href="module-models_dashboard.html">models/dashboard</a></li><li><a href="module-models_project.html">models/project</a></li><li><a href="module-routes_dashboard-routes.html">routes/dashboard-routes</a></li><li><a href="module-routes_project-routes.html">routes/project-routes</a></li></ul><h3>Classes</h3><ul><li><a href="module-models_project-Project.html">Project</a></li></ul><h3>Global</h3><ul><li><a href="global.html#db">db</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="controllers_auth.module_controller.html">controller</a></li><li><a href="module-app.html">app</a></li><li><a href="module-configs_db.html">configs/db</a></li><li><a href="module-controllers_dashboard-controller.html">controllers/dashboard-controller</a></li><li><a href="module-controllers_password-reset-controller.html">controllers/password-reset-controller</a></li><li><a href="module-controllers_project-controller.html">controllers/project-controller</a></li><li><a href="module-models_dashboard.html">models/dashboard</a></li><li><a href="module-models_password-reset.html">models/password-reset</a></li><li><a href="module-models_project.html">models/project</a></li><li><a href="module-routes_auth.html">routes/auth</a></li><li><a href="module-routes_dashboard-routes.html">routes/dashboard-routes</a></li><li><a href="module-routes_password-reset-routes.html">routes/password-reset-routes</a></li><li><a href="module-routes_project-routes.html">routes/project-routes</a></li></ul><h3>Classes</h3><ul><li><a href="module-models_project-Project.html">Project</a></li></ul><h3>Global</h3><ul><li><a href="global.html#acceptInvitation">acceptInvitation</a></li><li><a href="global.html#getInvitationsByUserId">getInvitationsByUserId</a></li><li><a href="global.html#rejectInvitation">rejectInvitation</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.4</a> on Sat Aug 09 2025 19:45:52 GMT+0600 (Bangladesh Standard Time)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.4</a> on Wed Aug 13 2025 19:57:48 GMT+0600 (Bangladesh Standard Time)
 </footer>
 
 <script> prettyPrint(); </script>

@@ -27,35 +27,31 @@
     <section>
         <article>
             <pre class="prettyprint source linenums"><code>/**
- * @file Dashboard data model for ProCollab.
+ * @file Dashboard data model for ProCollab
  * @module models/dashboard
- * @description Provides methods for fetching dashboard-related data (projects, tasks, user stats).
+ * @description Handles database operations for dashboard data
  */
 
 const db = require('../configs/db');
 
 module.exports = {
   /**
-   * Fetches a user's basic details by ID.
-   * @async
-   * @param {number} userId - The user's unique ID.
-   * @returns {Promise&lt;{name: string}>} Object containing the user's name.
-   * @throws {Error} If database query fails.
-   * @example
-   * const user = await dashboard.getUserById(123);
-   * console.log(user.name); // "John Doe"
+   * Gets user details by ID
+   * @param {number} userId - User ID
+   * @returns {object} User object with name
    */
   async getUserById(userId) {
-    const [rows] = await db.query('SELECT name FROM users WHERE uid = ?', [userId]);
+    const [rows] = await db.query(
+      'SELECT name FROM users WHERE uid = ?', 
+      [userId]
+    );
     return rows[0];
   },
 
   /**
-   * Counts active projects owned/joined by a user.
-   * @async
-   * @param {number} userId - The user's unique ID.
-   * @returns {Promise&lt;{owned: number, joined: number}>} Counts of owned/joined active projects.
-   * @throws {Error} If database query fails.
+   * Counts user's active projects
+   * @param {number} userId - User ID
+   * @returns {object} Counts of owned and joined projects
    */
   async getActiveProjectCounts(userId) {
     const [[owned]] = await db.query(
@@ -63,7 +59,7 @@ module.exports = {
        FROM projects p
        JOIN participates pa ON p.pid = pa.pid
        WHERE pa.uid = ? AND pa.role = 'Owner'
-       AND p.status = 'active'`,
+         AND p.status = 'active'`,
       [userId]
     );
 
@@ -72,7 +68,7 @@ module.exports = {
        FROM projects p
        JOIN participates pa ON p.pid = pa.pid
        WHERE pa.uid = ? AND pa.role = 'Member'
-       AND p.status = 'active'`,
+         AND p.status = 'active'`,
       [userId]
     );
 
@@ -80,11 +76,9 @@ module.exports = {
   },
 
   /**
-   * Counts pending tasks assigned to a user.
-   * @async
-   * @param {number} userId - The user's unique ID.
-   * @returns {Promise&lt;number>} Count of pending tasks.
-   * @throws {Error} If database query fails.
+   * Counts user's pending tasks
+   * @param {number} userId - User ID
+   * @returns {number} Count of pending tasks
    */
   async getPendingTasksCount(userId) {
     const [[count]] = await db.query(
@@ -98,11 +92,9 @@ module.exports = {
   },
 
   /**
-   * Lists projects owned by a user.
-   * @async
-   * @param {number} userId - The user's unique ID.
-   * @returns {Promise&lt;Array&lt;{pid: number, name: string}>>} Array of project objects.
-   * @throws {Error} If database query fails.
+   * Gets projects owned by user
+   * @param {number} userId - User ID
+   * @returns {array} List of project objects (id, name)
    */
   async getOwnedProjects(userId) {
     const [rows] = await db.query(
@@ -117,11 +109,9 @@ module.exports = {
   },
 
   /**
-   * Lists projects joined by a user (with owner names).
-   * @async
-   * @param {number} userId - The user's unique ID.
-   * @returns {Promise&lt;Array&lt;{pid: number, name: string, owner_name: string}>>} Array of project objects.
-   * @throws {Error} If database query fails.
+   * Gets projects user has joined
+   * @param {number} userId - User ID
+   * @returns {array} List of project objects (id, name, owner)
    */
   async getJoinedProjects(userId) {
     const [rows] = await db.query(
@@ -138,11 +128,9 @@ module.exports = {
   },
 
   /**
-   * Lists upcoming tasks assigned to a user (sorted by deadline).
-   * @async
-   * @param {number} userId - The user's unique ID.
-   * @returns {Promise&lt;Array&lt;{tid: number, task_name: string, deadline: string, project_name: string, pid: number}>>} Array of task objects.
-   * @throws {Error} If database query fails.
+   * Gets user's upcoming tasks
+   * @param {number} userId - User ID
+   * @returns {array} List of task objects (id, name, deadline, project)
    */
   async getUpcomingTasks(userId) {
     const [rows] = await db.execute(
@@ -168,13 +156,13 @@ module.exports = {
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-configs_db.html">configs/db</a></li><li><a href="module-controllers_dashboard-controller.html">controllers/dashboard-controller</a></li><li><a href="module-controllers_project-controller.html">controllers/project-controller</a></li><li><a href="module-models_dashboard.html">models/dashboard</a></li><li><a href="module-models_project.html">models/project</a></li><li><a href="module-routes_dashboard-routes.html">routes/dashboard-routes</a></li><li><a href="module-routes_project-routes.html">routes/project-routes</a></li></ul><h3>Classes</h3><ul><li><a href="module-models_project-Project.html">Project</a></li></ul><h3>Global</h3><ul><li><a href="global.html#db">db</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="controllers_auth.module_controller.html">controller</a></li><li><a href="module-app.html">app</a></li><li><a href="module-configs_db.html">configs/db</a></li><li><a href="module-controllers_dashboard-controller.html">controllers/dashboard-controller</a></li><li><a href="module-controllers_password-reset-controller.html">controllers/password-reset-controller</a></li><li><a href="module-controllers_project-controller.html">controllers/project-controller</a></li><li><a href="module-models_dashboard.html">models/dashboard</a></li><li><a href="module-models_password-reset.html">models/password-reset</a></li><li><a href="module-models_project.html">models/project</a></li><li><a href="module-routes_auth.html">routes/auth</a></li><li><a href="module-routes_dashboard-routes.html">routes/dashboard-routes</a></li><li><a href="module-routes_password-reset-routes.html">routes/password-reset-routes</a></li><li><a href="module-routes_project-routes.html">routes/project-routes</a></li></ul><h3>Classes</h3><ul><li><a href="module-models_project-Project.html">Project</a></li></ul><h3>Global</h3><ul><li><a href="global.html#acceptInvitation">acceptInvitation</a></li><li><a href="global.html#getInvitationsByUserId">getInvitationsByUserId</a></li><li><a href="global.html#rejectInvitation">rejectInvitation</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.4</a> on Sat Aug 09 2025 19:45:52 GMT+0600 (Bangladesh Standard Time)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.4</a> on Wed Aug 13 2025 19:57:48 GMT+0600 (Bangladesh Standard Time)
 </footer>
 
 <script> prettyPrint(); </script>

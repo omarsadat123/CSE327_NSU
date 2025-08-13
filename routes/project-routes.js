@@ -1,7 +1,7 @@
 /**
- * @file Project routes for ProCollab.
+ * @file Project routes for ProCollab
  * @module routes/project-routes
- * @description Defines all project-related routes.
+ * @description Handles all project-related routes
  */
 
 const express = require('express');
@@ -9,21 +9,22 @@ const router = express.Router();
 const projectController = require('../controllers/project-controller');
 
 /**
- * Project creation route.
- * @name POST/project/create
+ * Route for creating new projects
+ * @name POST /projects/create
  * @function
- * @memberof module:routes/project-routes
- * @inner
- * @param {string} path - Express path ('/create').
- * @param {Function} handler - Project creation controller.
- * @example
- * // Usage in app.js:
- * app.use('/projects', require('./routes/project-routes'));
+ * @param {string} path - Route path ('/create')
+ * @param {function} handler - Project creation controller
  * 
- * // Example request:
+ * @example
+ * // Client-side usage:
  * fetch('/projects/create', {
  *   method: 'POST',
- *   body: JSON.stringify({ name: 'New Project', visibility: 'private' })
+ *   headers: { 'Content-Type': 'application/json' },
+ *   body: JSON.stringify({ 
+ *     name: 'New Project', 
+ *     visibility: 'private',
+ *     userId: 123 
+ *   })
  * });
  */
 router.post('/create', projectController.createProject);

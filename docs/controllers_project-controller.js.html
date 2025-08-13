@@ -27,40 +27,33 @@
     <section>
         <article>
             <pre class="prettyprint source linenums"><code>/**
- * @file Project controller for ProCollab.
+ * @file Project controller for ProCollab
  * @module controllers/project-controller
- * @description Handles project creation and related operations.
+ * @description Handles project creation and management
  */
 
 const Project = require('../models/project');
 
 /**
- * Creates a new project and redirects to dashboard.
- * @async
- * @function createProject
- * @param {import('express').Request} req - Express request object.
- * @param {Object} req.session - User session data.
- * @param {number} [req.session.userId=1] - Authenticated user's ID (temporary fallback to 1).
- * @param {Object} req.body - Project creation data.
- * @param {string} req.body.name - Project name (required).
- * @param {string} [req.body.description=""] - Project description.
- * @param {string} req.body.visibility - Project visibility ('public'|'private').
- * @param {string} [req.body.status="active"] - Initial project status.
- * @param {import('express').Response} res - Express response object.
- * @returns {Promise&lt;void>}
- * @throws {Error} If project creation fails.
- * @example
- * // Route definition:
- * router.post('/projects', projectController.createProject);
+ * Creates a new project and redirects to dashboard
+ * @param {object} req - Express request object
+ * @param {object} req.session - User session data
+ * @param {number} [req.session.userId=1] - User ID (temporary fallback to 1)
+ * @param {object} req.body - Project data
+ * @param {string} req.body.name - Project name (required)
+ * @param {string} [req.body.description=""] - Project description
+ * @param {string} req.body.visibility - Project visibility ('public' or 'private')
+ * @param {string} [req.body.status="active"] - Initial status
+ * @param {object} res - Express response object
  */
-exports.createProject = async (req, res) => {
+const createProject = async (req, res) => {
   try {
-    const userId = req.session.userId || 1; // Temporary development bypass
-    const { 
-      name, 
-      description = "", 
-      visibility, 
-      status = "active" 
+    const userId = req.session.userId || 1; // FIXME: Remove fallback before production
+    const {
+      name,
+      description = '',
+      visibility,
+      status = 'active'
     } = req.body;
 
     if (!name || !visibility) {
@@ -75,6 +68,10 @@ exports.createProject = async (req, res) => {
       message: 'Project creation failed. Please try again.'
     });
   }
+};
+
+module.exports = {
+  createProject
 };</code></pre>
         </article>
     </section>
@@ -85,13 +82,13 @@ exports.createProject = async (req, res) => {
 </div>
 
 <nav>
-    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-configs_db.html">configs/db</a></li><li><a href="module-controllers_dashboard-controller.html">controllers/dashboard-controller</a></li><li><a href="module-controllers_project-controller.html">controllers/project-controller</a></li><li><a href="module-models_dashboard.html">models/dashboard</a></li><li><a href="module-models_project.html">models/project</a></li><li><a href="module-routes_dashboard-routes.html">routes/dashboard-routes</a></li><li><a href="module-routes_project-routes.html">routes/project-routes</a></li></ul><h3>Classes</h3><ul><li><a href="module-models_project-Project.html">Project</a></li></ul><h3>Global</h3><ul><li><a href="global.html#db">db</a></li></ul>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="controllers_auth.module_controller.html">controller</a></li><li><a href="module-app.html">app</a></li><li><a href="module-configs_db.html">configs/db</a></li><li><a href="module-controllers_dashboard-controller.html">controllers/dashboard-controller</a></li><li><a href="module-controllers_password-reset-controller.html">controllers/password-reset-controller</a></li><li><a href="module-controllers_project-controller.html">controllers/project-controller</a></li><li><a href="module-models_dashboard.html">models/dashboard</a></li><li><a href="module-models_password-reset.html">models/password-reset</a></li><li><a href="module-models_project.html">models/project</a></li><li><a href="module-routes_auth.html">routes/auth</a></li><li><a href="module-routes_dashboard-routes.html">routes/dashboard-routes</a></li><li><a href="module-routes_password-reset-routes.html">routes/password-reset-routes</a></li><li><a href="module-routes_project-routes.html">routes/project-routes</a></li></ul><h3>Classes</h3><ul><li><a href="module-models_project-Project.html">Project</a></li></ul><h3>Global</h3><ul><li><a href="global.html#acceptInvitation">acceptInvitation</a></li><li><a href="global.html#getInvitationsByUserId">getInvitationsByUserId</a></li><li><a href="global.html#rejectInvitation">rejectInvitation</a></li></ul>
 </nav>
 
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.4</a> on Sat Aug 09 2025 19:45:52 GMT+0600 (Bangladesh Standard Time)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.4</a> on Wed Aug 13 2025 19:57:48 GMT+0600 (Bangladesh Standard Time)
 </footer>
 
 <script> prettyPrint(); </script>

@@ -1,38 +1,31 @@
 /**
- * @file Project controller for ProCollab.
+ * @file Project controller for ProCollab
  * @module controllers/project-controller
- * @description Handles project creation and related operations.
+ * @description Handles project creation and management
  */
 
 const Project = require('../models/project');
 
 /**
- * Creates a new project and redirects to dashboard.
- * @async
- * @function createProject
- * @param {import('express').Request} req - Express request object.
- * @param {Object} req.session - User session data.
- * @param {number} [req.session.userId=1] - Authenticated user's ID (temporary fallback to 1).
- * @param {Object} req.body - Project creation data.
- * @param {string} req.body.name - Project name (required).
- * @param {string} [req.body.description=""] - Project description.
- * @param {string} req.body.visibility - Project visibility ('public'|'private').
- * @param {string} [req.body.status="active"] - Initial project status.
- * @param {import('express').Response} res - Express response object.
- * @returns {Promise<void>}
- * @throws {Error} If project creation fails.
- * @example
- * // Route definition:
- * router.post('/projects', projectController.createProject);
+ * Creates a new project and redirects to dashboard
+ * @param {object} req - Express request object
+ * @param {object} req.session - User session data
+ * @param {number} [req.session.userId=1] - User ID (temporary fallback to 1)
+ * @param {object} req.body - Project data
+ * @param {string} req.body.name - Project name (required)
+ * @param {string} [req.body.description=""] - Project description
+ * @param {string} req.body.visibility - Project visibility ('public' or 'private')
+ * @param {string} [req.body.status="active"] - Initial status
+ * @param {object} res - Express response object
  */
-exports.createProject = async (req, res) => {
+const createProject = async (req, res) => {
   try {
-    const userId = req.session.userId || 1; // Temporary development bypass
-    const { 
-      name, 
-      description = "", 
-      visibility, 
-      status = "active" 
+    const userId = req.session.userId || 1; // FIXME: Remove fallback before production
+    const {
+      name,
+      description = '',
+      visibility,
+      status = 'active'
     } = req.body;
 
     if (!name || !visibility) {
@@ -47,4 +40,8 @@ exports.createProject = async (req, res) => {
       message: 'Project creation failed. Please try again.'
     });
   }
+};
+
+module.exports = {
+  createProject
 };
