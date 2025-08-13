@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: models/dashboard.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: models/dashboard.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * @file Dashboard data model for ProCollab
+ * @module models/dashboard
+ * @description Handles database operations for dashboard data
+ */
+
+const db = require('../configs/db');
+
+module.exports = {
+  /**
+   * Gets user details by ID
+   * @param {number} userId - User ID
+   * @returns {object} User object with name
+   */
+  async getUserById(userId) {
+    const [rows] = await db.query(
+      'SELECT name FROM users WHERE uid = ?',
+      [userId]
+    );
+    return rows[0];
+  },
+
+  /**
+   * Counts user's active projects
+   * @param {number} userId - User ID
+   * @returns {object} Counts of owned and joined projects
+   */
+  async getActiveProjectCounts(userId) {
+    const [[owned]] = await db.query(
+      `SELECT COUNT(*) AS count
+       FROM projects p
+       JOIN participates pa ON p.pid = pa.pid
+       WHERE pa.uid = ? AND pa.role = 'Owner'
+         AND p.status = 'active'`,
+      [userId]
+    );
+
+    const [[joined]] = await db.query(
+      `SELECT COUNT(*) AS count
+       FROM projects p
+       JOIN participates pa ON p.pid = pa.pid
+       WHERE pa.uid = ? AND pa.role = 'Member'
+         AND p.status = 'active'`,
+      [userId]
+    );
+
+    return { owned: owned.count, joined: joined.count };
+  },
+
+  /**
+   * Counts user's pending tasks
+   * @param {number} userId - User ID
+   * @returns {number} Count of pending tasks
+   */
+  async getPendingTasksCount(userId) {
+    const [[count]] = await db.query(
+      `SELECT COUNT(*) AS count
+       FROM tasks t
+       JOIN assigned a ON t.tid = a.tid
+       WHERE a.uid = ? AND t.status != 'done'`,
+      [userId]
+    );
+    return count.count;
+  },
+
+  /**
+   * Gets projects owned by user
+   * @param {number} userId - User ID
+   * @returns {array} List of project objects (id, name)
+   */
+  async getOwnedProjects(userId) {
+    const [rows] = await db.query(
+      `SELECT p.pid, p.name
+       FROM projects p
+       JOIN participates pa ON p.pid = pa.pid
+       WHERE pa.uid = ? AND pa.role = 'Owner'
+       ORDER BY p.pid DESC`,
+      [userId]
+    );
+    return rows;
+  },
+
+  /**
+   * Gets projects user has joined
+   * @param {number} userId - User ID
+   * @returns {array} List of project objects (id, name, owner)
+   */
+  async getJoinedProjects(userId) {
+    const [rows] = await db.query(
+      `SELECT p.pid, p.name, u.name AS owner_name
+       FROM projects p
+       JOIN participates pa ON p.pid = pa.pid
+       JOIN participates po ON p.pid = po.pid AND po.role = 'Owner'
+       JOIN users u ON po.uid = u.uid
+       WHERE pa.uid = ? AND pa.role = 'Member'
+       ORDER BY p.pid DESC`,
+      [userId]
+    );
+    return rows;
+  },
+
+  /**
+   * Gets user's upcoming tasks
+   * @param {number} userId - User ID
+   * @returns {array} List of task objects (id, name, deadline, project)
+   */
+  async getUpcomingTasks(userId) {
+    const [rows] = await db.execute(
+      `SELECT t.tid, t.name AS task_name, t.deadline,
+              p.name AS project_name, p.pid
+       FROM tasks t
+       JOIN projects p ON t.pid = p.pid
+       JOIN assigned a ON t.tid = a.tid
+       WHERE a.uid = ? AND t.status != 'done'
+       ORDER BY t.deadline ASC
+       LIMIT 8`,
+      [userId]
+    );
+    return rows;
+  }
+};
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="controllers_auth.module_controller.html">controller</a></li><li><a href="module-app.html">app</a></li><li><a href="module-configs_db.html">configs/db</a></li><li><a href="module-controllers_dashboard-controller.html">controllers/dashboard-controller</a></li><li><a href="module-controllers_password-reset-controller.html">controllers/password-reset-controller</a></li><li><a href="module-controllers_project-controller.html">controllers/project-controller</a></li><li><a href="module-models_dashboard.html">models/dashboard</a></li><li><a href="module-models_password-reset.html">models/password-reset</a></li><li><a href="module-models_project.html">models/project</a></li><li><a href="module-routes_auth.html">routes/auth</a></li><li><a href="module-routes_dashboard-routes.html">routes/dashboard-routes</a></li><li><a href="module-routes_password-reset-routes.html">routes/password-reset-routes</a></li><li><a href="module-routes_project-routes.html">routes/project-routes</a></li><li><a href="module-routes_tasks.html">routes/tasks</a></li></ul><h3>Classes</h3><ul><li><a href="module-models_project-Project.html">Project</a></li></ul><h3>Global</h3><ul><li><a href="global.html#acceptInvitation">acceptInvitation</a></li><li><a href="global.html">assignUser</a></li><li><a href="global.html">create</a></li><li><a href="global.html#createTask">createTask</a></li><li><a href="global.html">getAll</a></li><li><a href="global.html">getByProjectId</a></li><li><a href="global.html#getInvitationsByUserId">getInvitationsByUserId</a></li><li><a href="global.html">getParticipantsByProject</a></li><li><a href="global.html">getProjectNameById</a></li><li><a href="global.html#getTasks">getTasks</a></li><li><a href="global.html#nodemailer">nodemailer</a></li><li><a href="global.html#rejectInvitation">rejectInvitation</a></li><li><a href="global.html">updateStatus</a></li><li><a href="global.html#updateTaskStatus">updateTaskStatus</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.4</a> on Wed Aug 13 2025 23:48:03 GMT+0600 (Bangladesh Standard Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
