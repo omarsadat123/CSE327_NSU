@@ -1,6 +1,6 @@
 // tests/task-controller.test.js
 
-// 1️⃣ Mock the Task model first so DB is never touched
+// Mock the Task model first so DB is never touched
 jest.mock('../models/task-model', () => ({
   getByProjectId: jest.fn(),
   getParticipantsByProject: jest.fn(),
@@ -13,7 +13,7 @@ jest.mock('../models/task-model', () => ({
 const taskController = require('../controllers/task-controller');
 const Task = require('../models/task-model');
 
-// 2️⃣ Suppress console output during tests
+//console output during tests
 const originalConsoleError = console.error;
 const originalConsoleLog = console.log;
 
