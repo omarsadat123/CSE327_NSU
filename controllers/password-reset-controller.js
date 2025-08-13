@@ -1,7 +1,7 @@
 /**
- * @file Password reset controller for ProCollab.
+ * @file Password reset controller for ProCollab
  * @module controllers/password-reset-controller
- * @description Handles rendering the reset page, sending verification codes, verifying codes, and setting new passwords.
+ * @description Manages password reset flow: page rendering, sending codes, verifying, and updating passwords
  */
 
 const PasswordResetModel = require('../models/password-reset');
@@ -9,27 +9,18 @@ const bcrypt = require('bcryptjs');
 const transporter = require('../configs/mailer');
 
 /**
- * Renders the password reset page.
- *
- * @function getPage
- * @param {import('express').Request} req - Express request object.
- * @param {import('express').Response} res - Express response object.
- * @returns {void}
+ * Shows the password reset page
+ * @param {object} req - Express request
+ * @param {object} res - Express response
  */
 const getPage = (req, res) => {
   res.render('password-reset', { phase: null, message: null });
 };
 
 /**
- * Sends a 6-digit verification code to the user's email address.
- *
- * @async
- * @function sendCode
- * @param {import('express').Request} req - Express request object.
- * @param {Object} req.body - Request body data.
- * @param {string} req.body.email - User's email address.
- * @param {import('express').Response} res - Express response object.
- * @returns {Promise<void>}
+ * Sends a verification code to the user's email
+ * @param {object} req - Express request
+ * @param {object} res - Express response
  */
 const sendCode = async (req, res) => {
   const { email } = req.body;
@@ -72,14 +63,9 @@ const sendCode = async (req, res) => {
 };
 
 /**
- * Verifies the entered code against the stored session data.
- *
- * @function verifyCode
- * @param {import('express').Request} req - Express request object.
- * @param {Object} req.body - Request body data.
- * @param {string} req.body.code - 6-digit verification code.
- * @param {import('express').Response} res - Express response object.
- * @returns {void}
+ * Checks if the entered code is correct
+ * @param {object} req - Express request
+ * @param {object} res - Express response
  */
 const verifyCode = (req, res) => {
   const { code } = req.body;
@@ -104,16 +90,9 @@ const verifyCode = (req, res) => {
 };
 
 /**
- * Updates the user's password if verification is complete.
- *
- * @async
- * @function setPassword
- * @param {import('express').Request} req - Express request object.
- * @param {Object} req.body - Request body data.
- * @param {string} req.body.password - New password.
- * @param {string} req.body.confirm - Confirm password.
- * @param {import('express').Response} res - Express response object.
- * @returns {Promise<void>}
+ * Updates the password if verification passed
+ * @param {object} req - Express request
+ * @param {object} res - Express response
  */
 const setPassword = async (req, res) => {
   const { password, confirm } = req.body;

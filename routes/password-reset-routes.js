@@ -1,7 +1,7 @@
 /**
  * @file Password reset routes for ProCollab.
  * @module routes/password-reset-routes
- * @description Defines password reset routes including sending a code, verifying the code, and setting a new password.
+ * @description Routes for sending verification codes, verifying them, and setting new passwords.
  */
 
 const express = require('express');
@@ -9,46 +9,30 @@ const router = express.Router();
 const passwordResetController = require('../controllers/password-reset-controller');
 
 /**
- * GET - Render password reset page.
+ * Renders the change password page.
  *
- * @name GET/change-password
- * @function
- * @memberof module:routes/password-reset-routes
- * @param {string} path - '/change-password'
- * @param {Function} handler - Controller method to render the reset page.
+ * @route GET /change-password
  */
 router.get('/change-password', passwordResetController.getPage);
 
 /**
- * POST - Send verification code to email.
+ * Sends a verification code to the user's email.
  *
- * @name POST/send-code
- * @function
- * @memberof module:routes/password-reset-routes
- * @param {string} path - '/send-code'
- * @param {Function} handler - Controller method to send verification email.
+ * @route POST /send-code
  */
 router.post('/send-code', passwordResetController.sendCode);
 
 /**
- * POST - Verify submitted code.
+ * Verifies the submitted code.
  *
- * @name POST/verify-code
- * @function
- * @memberof module:routes/password-reset-routes
- * @param {string} path - '/verify-code'
- * @param {Function} handler - Controller method to verify code.
+ * @route POST /verify-code
  */
 router.post('/verify-code', passwordResetController.verifyCode);
 
 /**
- * POST - Set new password after verification.
+ * Sets a new password after verification.
  *
- * @name POST/set-new-password
- * @function
- * @memberof module:routes/password-reset-routes
- * @param {string} path - '/set-new-password'
- * @param {Function} handler - Controller method to set a new password.
+ * @route POST /set-new-password
  */
 router.post('/set-new-password', passwordResetController.setPassword);
 
