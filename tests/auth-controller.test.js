@@ -1,11 +1,4 @@
-/**
- * @file auth.controller.test.js
- * @description Unit tests for the Authentication Controller module.
- * These tests cover login, signup, OTP verification, and logout functionalities.
- * All external dependencies (database, bcrypt, nodemailer) are mocked to avoid side effects.
- * @module tests/auth.controller.test
- */
-
+// Mock dependencies to prevent real DB or service calls
 jest.mock('../models/auth', () => ({
   findUserByEmailAndPassword: jest.fn(),
   findUserByEmail: jest.fn(),
@@ -23,133 +16,137 @@ describe('Authentication Controller', () => {
   let req;
   let res;
 
-  /**
-   * Reset mock request and response before each test.
-   */
   beforeEach(() => {
+    // Reset request/response objects before each test
     req = { body: {}, session: {} };
-    res = { render: jest.fn(), redirect: jest.fn(), clearCookie: jest.fn() };
+    res = {
+      render: jest.fn(),
+      redirect: jest.fn(),
+      clearCookie: jest.fn(),
+    };
     jest.clearAllMocks();
   });
 
-  /**
-   * @test
-   * @description Unit tests for showing the login page.
-   */
+  // ---------------------------
+  // Login Page Rendering
+  // ---------------------------
   describe('showLoginPage', () => {
-    it('should render login page when no user session exists', () => {
+    it('renders login when no session exists', () => {
       authController.showLoginPage(req, res);
       expect(res.render).toHaveBeenCalledWith('login', { message: null });
     });
 
-    it('should redirect to dashboard when user session exists', () => {
+    it('redirects to dashboard when session exists', () => {
       req.session.userId = 1;
       authController.showLoginPage(req, res);
       expect(res.redirect).toHaveBeenCalledWith('/dashboard');
     });
   });
 
-  /**
-   * @test
-   * @description Unit tests for login functionality.
-   */
+  // ---------------------------
+  // Login Functionality
+  // ---------------------------
   describe('login', () => {
-    it('should login successfully and redirect when credentials are valid', async () => {
+    it('logs in and redirects when credentials are correct', async () => {
       authModel.findUserByEmailAndPassword.mockResolvedValue({
-        uid: 1, name: 'Test User', email: 'test@example.com',
+        uid: 1,
+        name: 'Test User',
+        email: 'test@example.com',
       });
       req.body = { email: 'test@example.com', password: '123456' };
-
       await authController.login(req, res);
       expect(req.session.userId).toBe(1);
       expect(res.redirect).toHaveBeenCalledWith('/dashboard');
     });
 
-    it('should render login page with error when credentials are invalid', async () => {
+    it('renders login with error when credentials are invalid', async () => {
       authModel.findUserByEmailAndPassword.mockResolvedValue(null);
       req.body = { email: 'test@example.com', password: 'wrong' };
-
       await authController.login(req, res);
-      expect(res.render).toHaveBeenCalledWith('login', { message: 'Invalid email or password.' });
+      expect(res.render).toHaveBeenCalledWith('login', {
+        message: 'Invalid email or password.',
+      });
     });
 
-    it('should render login page with error on exception', async () => {
+    it('renders login with error on exception', async () => {
       authModel.findUserByEmailAndPassword.mockRejectedValue(new Error('DB error'));
       req.body = { email: 'test@example.com', password: '123456' };
-
       await authController.login(req, res);
-      expect(res.render).toHaveBeenCalledWith('login', { message: 'An error occurred. Please try again.' });
+      expect(res.render).toHaveBeenCalledWith('login', {
+        message: 'An error occurred. Please try again.',
+      });
     });
   });
 
-  /**
-   * @test
-   * @description Unit tests for logout functionality.
-   */
+  // ---------------------------
+  // Logout Functionality
+  // ---------------------------
   describe('logout', () => {
-    it('should destroy session and redirect to login', () => {
-      req.session.destroy = jest.fn(cb => cb(null));
+    it('destroys session and redirects to login', () => {
+      req.session.destroy = jest.fn((cb) => cb(null));
       authController.logout(req, res);
       expect(res.clearCookie).toHaveBeenCalledWith('connect.sid');
       expect(res.redirect).toHaveBeenCalledWith('/login');
     });
 
-    it('should redirect to dashboard if session destroy fails', () => {
-      req.session.destroy = jest.fn(cb => cb(new Error('fail')));
+    it('redirects to dashboard if destroy fails', () => {
+      req.session.destroy = jest.fn((cb) => cb(new Error('fail')));
       authController.logout(req, res);
       expect(res.redirect).toHaveBeenCalledWith('/dashboard');
     });
   });
 
-  /**
-   * @test
-   * @description Unit tests for signup page rendering.
-   */
+  // ---------------------------
+  // Signup Page Rendering
+  // ---------------------------
   describe('showSignupPage', () => {
-    it('should render signup page when no session exists', () => {
+    it('renders signup page when no session', () => {
       authController.showSignupPage(req, res);
-      expect(res.render).toHaveBeenCalledWith('signup', { errors: [], formData: {} });
+      expect(res.render).toHaveBeenCalledWith('signup', {
+        errors: [],
+        formData: {},
+      });
     });
 
-    it('should redirect to dashboard when user is logged in', () => {
+    it('redirects to dashboard when session exists', () => {
       req.session.userId = 1;
       authController.showSignupPage(req, res);
       expect(res.redirect).toHaveBeenCalledWith('/dashboard');
     });
   });
 
-  /**
-   * @test
-   * @description Unit tests for OTP page rendering.
-   */
+  // ---------------------------
+  // OTP Page Rendering
+  // ---------------------------
   describe('showOtpPage', () => {
-    it('should redirect to signup if no signup data exists in session', () => {
+    it('redirects to signup when no signupData found', () => {
       authController.showOtpPage(req, res);
       expect(res.redirect).toHaveBeenCalledWith('/signup');
     });
 
-    it('should render verify-otp page when signup data exists', () => {
+    it('renders OTP page when signupData exists', () => {
       req.session.signupData = { email: 'test@example.com' };
       authController.showOtpPage(req, res);
-      expect(res.render).toHaveBeenCalledWith('verify-otp', { error: null, email: 'test@example.com' });
+      expect(res.render).toHaveBeenCalledWith('verify-otp', {
+        error: null,
+        email: 'test@example.com',
+      });
     });
   });
 
-  /**
-   * @test
-   * @description Unit tests for OTP verification process.
-   */
+  // ---------------------------
+  // OTP Verification
+  // ---------------------------
   describe('handleOtpVerification', () => {
-    it('should redirect to signup if session data is missing', async () => {
+    it('redirects to signup if no session data', async () => {
       await authController.handleOtpVerification(req, res);
       expect(res.redirect).toHaveBeenCalledWith('/signup');
     });
 
-    it('should render verify-otp page with error if OTP does not match', async () => {
+    it('renders OTP page with error if OTP is invalid', async () => {
       req.session.signupData = { email: 'test@example.com' };
       req.session.otp = '123456';
       req.body = { otp: '000000' };
-
       await authController.handleOtpVerification(req, res);
       expect(res.render).toHaveBeenCalledWith('verify-otp', {
         error: 'Invalid OTP. Please try again.',
@@ -157,26 +154,34 @@ describe('Authentication Controller', () => {
       });
     });
 
-    it('should create user and redirect when OTP matches', async () => {
-      req.session.signupData = { name: 'Test', email: 'test@example.com', password: 'pass' };
+    it('creates user and redirects when OTP matches', async () => {
+      req.session.signupData = {
+        name: 'Test',
+        email: 'test@example.com',
+        password: 'pass',
+      };
       req.session.otp = '123456';
       req.body = { otp: '123456' };
       bcrypt.hash.mockResolvedValue('hashedPass');
       authModel.createUserWithCredentials.mockResolvedValue({
-        uid: 1, name: 'Test', email: 'test@example.com',
+        uid: 1,
+        name: 'Test',
+        email: 'test@example.com',
       });
-
       await authController.handleOtpVerification(req, res);
       expect(res.redirect).toHaveBeenCalledWith('/dashboard');
     });
 
-    it('should render verify-otp page with error if user creation fails', async () => {
-      req.session.signupData = { name: 'Test', email: 'test@example.com', password: 'pass' };
+    it('renders error if user creation fails', async () => {
+      req.session.signupData = {
+        name: 'Test',
+        email: 'test@example.com',
+        password: 'pass',
+      };
       req.session.otp = '123456';
       req.body = { otp: '123456' };
       bcrypt.hash.mockResolvedValue('hashedPass');
       authModel.createUserWithCredentials.mockRejectedValue(new Error('fail'));
-
       await authController.handleOtpVerification(req, res);
       expect(res.render).toHaveBeenCalledWith('verify-otp', {
         error: 'Failed to create account. Please signup again.',
