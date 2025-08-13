@@ -44,9 +44,9 @@ exports.getTasks = async (req, res) => {
  * @param {Object} req.body - Task details from the submitted form.
  * @param {string} req.body.task_name - The name/title of the task.
  * @param {string} req.body.task_description - A description of the task.
- * @param {string} req.body.task_status - The current status of the task (e.g., "open", "in-progress", "done").
+ * @param {string} req.body.task_status - The current status of the task ("open", "in-progress", "done").
  * @param {string|null} [req.body.task_deadline] - The deadline date for the task (optional).
- * @param {string} req.body.task_priority - The priority level of the task (e.g., "low", "medium", "high").
+ * @param {string} req.body.task_priority - The priority level of the task ("low", "medium", "high").
  * @param {string} req.body.task_category - The category or type of the task.
  * @param {string|number} req.body.projectId - The ID of the project the task belongs to.
  * @param {string|string[]} [req.body.assigned_uid] - One or more user IDs to assign the task to (optional).
@@ -115,7 +115,7 @@ exports.createTask = async (req, res) => {
  * @param {string|number} req.params.projectId - The ID of the project the task belongs to.
  * @param {Object} req.body - Request body containing task update data.
  * @param {string|number} req.body.task_id - The ID of the task to update.
- * @param {string} req.body.status - The new status of the task (e.g., "open", "in-progress", "done").
+ * @param {string} req.body.status - The new status of the task ("open", "in-progress", "done").
  * @param {Object} res - Express response object.
  * @returns {Promise<void>} Redirects to the project's task list page on success,
  * or sends a 500 error response if the update fails.
