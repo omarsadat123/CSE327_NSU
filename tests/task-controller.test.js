@@ -1,108 +1,145 @@
 // tests/task-controller.test.js
-const request = require('supertest');
-const app = require('../app');
+
+// 1️⃣ Mock the Task model first so DB is never touched
+jest.mock('../models/task-model', () => ({
+  getByProjectId: jest.fn(),
+  getParticipantsByProject: jest.fn(),
+  getProjectNameById: jest.fn(),
+  create: jest.fn(),
+  assignUser: jest.fn(),
+  updateStatus: jest.fn(),
+}));
+
+const taskController = require('../controllers/task-controller');
 const Task = require('../models/task-model');
 
-jest.mock('../models/task-model');
+// 2️⃣ Suppress console output during tests
+const originalConsoleError = console.error;
+const originalConsoleLog = console.log;
 
-Task.getByProjectId = jest.fn();
-Task.getParticipantsByProject = jest.fn();
-Task.getProjectNameById = jest.fn();
-Task.create = jest.fn();
-Task.assignUser = jest.fn();
+beforeAll(() => {
+  console.error = jest.fn();
+  console.log = jest.fn();
+});
 
-describe('Task Controller Tests', () => {
+afterAll(() => {
+  console.error = originalConsoleError;
+  console.log = originalConsoleLog;
+});
+
+describe('Task Controller', () => {
+  let req;
+  let res;
+
   beforeEach(() => {
+    req = { params: {}, body: {} };
+    res = {
+      render: jest.fn(),
+      redirect: jest.fn(),
+      status: jest.fn().mockReturnThis(),
+      send: jest.fn(),
+    };
     jest.clearAllMocks();
   });
 
-  describe('GET /projects/:projectId', () => {
-    it('should fetch all tasks and render the task-create page', async () => {
-      const projectId = '1';
-      const mockTasks = [
-        {
-          tid: 1,
-          task_name: 'My First Test Task',
-          status: 'Pending',
-          deadline: null,
-          task_description: 'Test description',
-          priority: 'Medium',
-          category: 'Development',
-          project_name: 'Test Project',
-          pid: 1,
-          assigned_user_names: 'Chayan',
-        },
-        {
-          tid: 2,
-          task_name: 'Another Test Task',
-          status: 'In Progress',
-          deadline: '2025-08-15',
-          task_description: null,
-          priority: 'High',
-          category: 'Design',
-          project_name: 'Test Project',
-          pid: 1,
-          assigned_user_names: null,
-        },
-      ];
-      const mockParticipants = [{ uid: 1, name: 'Chayan' }];
-      const mockProjectName = 'Test Project';
+  describe('getTasks', () => {
+    it('should render tasks page with correct data', async () => {
+      req.params.projectId = '1';
+      Task.getByProjectId.mockResolvedValue([{ id: 1, name: 'Test Task' }]);
+      Task.getParticipantsByProject.mockResolvedValue([{ id: 10, name: 'User1' }]);
+      Task.getProjectNameById.mockResolvedValue('My Project');
 
-      Task.getByProjectId.mockResolvedValue(mockTasks);
-      Task.getParticipantsByProject.mockResolvedValue(mockParticipants);
-      Task.getProjectNameById.mockResolvedValue(mockProjectName);
+      await taskController.getTasks(req, res);
 
-      const response = await request(app).get(`/projects/${projectId}`);
+      expect(Task.getByProjectId).toHaveBeenCalledWith('1');
+      expect(Task.getParticipantsByProject).toHaveBeenCalledWith('1');
+      expect(Task.getProjectNameById).toHaveBeenCalledWith('1');
+      expect(res.render).toHaveBeenCalledWith('task-create', {
+        tasks: [{ id: 1, name: 'Test Task' }],
+        participants: [{ id: 10, name: 'User1' }],
+        projectName: 'My Project',
+        projectId: '1',
+      });
+    });
 
-      expect(response.statusCode).toBe(200);
-      expect(Task.getByProjectId).toHaveBeenCalledWith(projectId);
-      expect(Task.getByProjectId).toHaveBeenCalledTimes(1);
-      expect(Task.getParticipantsByProject).toHaveBeenCalledWith(projectId);
-      expect(Task.getParticipantsByProject).toHaveBeenCalledTimes(1);
-      expect(Task.getProjectNameById).toHaveBeenCalledWith(projectId);
-      expect(Task.getProjectNameById).toHaveBeenCalledTimes(1);
-      expect(response.text).toContain('My First Test Task');
-      expect(response.text).toContain('Test Project');
-      expect(response.text).toContain('Chayan');
+    it('should handle errors', async () => {
+      req.params.projectId = '1';
+      Task.getByProjectId.mockRejectedValue(new Error('DB error'));
+
+      await taskController.getTasks(req, res);
+
+      expect(res.status).toHaveBeenCalledWith(500);
+      expect(res.send).toHaveBeenCalledWith(
+        '<h1>Server Error</h1><p>Could not load tasks.</p>'
+      );
     });
   });
 
-  describe('POST /', () => {
-    it('should create a new task and redirect to project page', async () => {
-      const taskData = {
-        task_name: 'New Test Task',
-        task_description: 'Test description',
-        task_status: 'To Do',
-        task_deadline: '', // Changed to empty string to match form behavior
-        task_priority: 'Medium',
-        task_category: 'Development',
-        project_id: '1',
-        'assigned_uid[]': ['1'],
+  describe('createTask', () => {
+    it('should create a task and assign users', async () => {
+      req.body = {
+        task_name: 'New Task',
+        task_description: 'Desc',
+        task_status: 'open',
+        task_deadline: '2025-08-13',
+        task_priority: 'high',
+        task_category: 'dev',
+        projectId: '1',
+        assigned_uid: ['2', '3'],
       };
 
       Task.create.mockResolvedValue({ insertId: 99 });
-      Task.assignUser.mockResolvedValue({});
+      Task.assignUser.mockResolvedValue();
 
-      const response = await request(app)
-        .post('/')
-        .set('Content-Type', 'application/x-www-form-urlencoded')
-        .send(taskData);
-
-      expect(response.statusCode).toBe(302);
-      expect(response.headers.location).toBe('/projects/1');
+      await taskController.createTask(req, res);
 
       expect(Task.create).toHaveBeenCalledWith(
-        taskData.task_name,
-        taskData.task_status,
-        taskData.task_deadline, // ""
-        taskData.task_description,
-        taskData.task_priority,
-        taskData.task_category,
-        taskData.project_id
+        'New Task',
+        'open',
+        '2025-08-13',
+        'Desc',
+        'high',
+        'dev',
+        '1'
       );
-      expect(Task.create).toHaveBeenCalledTimes(1);
-      expect(Task.assignUser).toHaveBeenCalledWith('1', 99);
-      expect(Task.assignUser).toHaveBeenCalledTimes(1);
+      expect(Task.assignUser).toHaveBeenCalledWith('2', 99);
+      expect(Task.assignUser).toHaveBeenCalledWith('3', 99);
+      expect(res.redirect).toHaveBeenCalledWith('/projects/1/tasks');
+    });
+
+    it('should handle errors on create', async () => {
+      Task.create.mockRejectedValue(new Error('DB error'));
+
+      await taskController.createTask(req, res);
+
+      expect(res.status).toHaveBeenCalledWith(500);
+      expect(res.send).toHaveBeenCalledWith(
+        '<h1>Server Error</h1><p>Could not create a new task. Check server console for details.</p>'
+      );
+    });
+  });
+
+  describe('updateTaskStatus', () => {
+    it('should update task status and redirect', async () => {
+      req.params.projectId = '1';
+      req.body = { task_id: '5', status: 'done' };
+      Task.updateStatus.mockResolvedValue();
+
+      await taskController.updateTaskStatus(req, res);
+
+      expect(Task.updateStatus).toHaveBeenCalledWith('5', 'done');
+      expect(res.redirect).toHaveBeenCalledWith('/projects/1/tasks');
+    });
+
+    it('should handle errors', async () => {
+      Task.updateStatus.mockRejectedValue(new Error('DB error'));
+
+      await taskController.updateTaskStatus(req, res);
+
+      expect(res.status).toHaveBeenCalledWith(500);
+      expect(res.send).toHaveBeenCalledWith(
+        '<h1>Server Error</h1><p>Could not update task status.</p>'
+      );
     });
   });
 });
