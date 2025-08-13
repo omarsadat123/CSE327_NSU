@@ -27,7 +27,8 @@ const ensureAuthenticated = (req, res, next) => {
 const getDashboard = async (req, res) => {
   try {
     const userId = req.session.userId;
-    const user = req.session.user || await Dashboard.getUserById(userId);
+    const user =
+      req.session.user || (await Dashboard.getUserById(userId));
 
     const [
       projectCounts,

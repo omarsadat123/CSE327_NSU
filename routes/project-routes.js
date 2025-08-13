@@ -20,10 +20,10 @@ const projectController = require('../controllers/project-controller');
  * fetch('/projects/create', {
  *   method: 'POST',
  *   headers: { 'Content-Type': 'application/json' },
- *   body: JSON.stringify({ 
- *     name: 'New Project', 
+ *   body: JSON.stringify({
+ *     name: 'New Project',
  *     visibility: 'private',
- *     userId: 123 
+ *     userId: 123
  *   })
  * });
  */

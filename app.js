@@ -22,12 +22,14 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 // Session configuration
-app.use(session({
-  secret: process.env.SESSION_SECRET || 'your_secret_key',
-  resave: false,
-  saveUninitialized: true,
-  cookie: { secure: false }
-}));
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET || 'your_secret_key',
+    resave: false,
+    saveUninitialized: true,
+    cookie: { secure: false }
+  })
+);
 
 // Middleware
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -53,7 +55,9 @@ const startServer = async () => {
   try {
     await db.getConnection();
     app.listen(PORT, () => {
-      console.log(`Server running at http://localhost:${PORT}/login`);
+      console.log(
+        'Server running at ' + 'http://localhost:' + PORT + '/login'
+      );
     });
   } catch (err) {
     console.error('Server startup failed:', err);
@@ -63,11 +67,13 @@ const startServer = async () => {
 
 // Error handlers
 app.use((req, res) => res.status(404).send('Not Found'));
+
 app.use((err, req, res, next) => {
   console.error(err);
   res.status(500).send('Server Error');
 });
 
+// Start server if main module
 if (require.main === module) startServer();
 
 module.exports = app;

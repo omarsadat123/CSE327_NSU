@@ -72,7 +72,7 @@ describe('Dashboard Controller', () => {
 
       // Mock dashboard model methods
       Dashboard.getUserById.mockResolvedValue({ id: 1, name: 'Test User' });
-      Dashboard.getActiveProjectCounts.mockResolvedValue(5);
+      Dashboard.getActiveProjectCounts.mockResolvedValue({ owned: 5, joined: 2 });
       Dashboard.getPendingTasksCount.mockResolvedValue(3);
       Dashboard.getOwnedProjects.mockResolvedValue([{ id: 1 }]);
       Dashboard.getJoinedProjects.mockResolvedValue([{ id: 2 }]);
@@ -80,14 +80,17 @@ describe('Dashboard Controller', () => {
 
       await dashboardController.getDashboard(req, res);
 
-      expect(res.render).toHaveBeenCalledWith('dashboard', expect.objectContaining({
-        user: expect.any(Object),
-        projectCounts: 5,
-        pendingTasksCount: 3,
-        ownedProjects: expect.any(Array),
-        joinedProjects: expect.any(Array),
-        upcomingTasks: expect.any(Array)
-      }));
+      expect(res.render).toHaveBeenCalledWith(
+        'dashboard',
+        expect.objectContaining({
+          user: expect.any(Object),
+          projectCounts: expect.objectContaining({ owned: 5, joined: 2 }),
+          pendingTasksCount: 3,
+          ownedProjects: expect.any(Array),
+          joinedProjects: expect.any(Array),
+          upcomingTasks: expect.any(Array)
+        })
+      );
     });
 
     it('should render error page on exception', async () => {
@@ -99,9 +102,12 @@ describe('Dashboard Controller', () => {
       await dashboardController.getDashboard(req, res);
 
       expect(res.status).toHaveBeenCalledWith(500);
-      expect(res.render).toHaveBeenCalledWith('error', expect.objectContaining({
-        message: 'Failed to load dashboard'
-      }));
+      expect(res.render).toHaveBeenCalledWith(
+        'error',
+        expect.objectContaining({
+          message: 'Failed to load dashboard'
+        })
+      );
     });
   });
 });
