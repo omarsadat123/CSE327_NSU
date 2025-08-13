@@ -790,7 +790,7 @@
     
 
     
-    <h4 class="name" id="createTask"><span class="type-signature">(async) </span>createTask<span class="signature">()</span><span class="type-signature"> &rarr; {Promise.&lt;void>}</span></h4>
+    <h4 class="name" id="createTask"><span class="type-signature">(async) </span>createTask<span class="signature">(req, res)</span><span class="type-signature"> &rarr; {Promise.&lt;void>}</span></h4>
     
 
     
@@ -834,10 +834,15 @@
 
         <tr>
             
-                <td class="name"><code></code></td>
+                <td class="name"><code>req</code></td>
             
 
             <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
             
             </td>
 
@@ -845,14 +850,33 @@
 
             
 
-            <td class="description last"></td>
-        </tr>
+            <td class="description last">Express request object.
+                <h6>Properties</h6>
+                
 
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
     
 
         <tr>
             
-                <td class="name"><code>req.body</code></td>
+                <td class="name"><code>body</code></td>
             
 
             <td class="type">
@@ -1161,13 +1185,25 @@
         </tr>
 
     
+    </tbody>
+</table>
+
+            </td>
+        </tr>
+
+    
 
         <tr>
             
-                <td class="name"><code></code></td>
+                <td class="name"><code>res</code></td>
             
 
             <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
             
             </td>
 
@@ -1175,7 +1211,7 @@
 
             
 
-            <td class="description last"></td>
+            <td class="description last">Express response object.</td>
         </tr>
 
     
@@ -1216,7 +1252,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="controllers_task-controller.js.html">controllers/task-controller.js</a>, <a href="controllers_task-controller.js.html#line39">line 39</a>
+        <a href="controllers_task-controller.js.html">controllers/task-controller.js</a>, <a href="controllers_task-controller.js.html#line61">line 61</a>
     </li></ul></dd>
     
 
@@ -1269,7 +1305,7 @@
 
     <h5>Example</h5>
     
-    <pre class="prettyprint"><code>// Route usage in Express:router.post('/projects/:projectId/tasks', taskController.createTask);</code></pre>
+    <pre class="prettyprint"><code>// Route usage in Express:// router.post('/projects/:projectId/tasks', taskController.createTask);</code></pre>
 
 
 
@@ -2389,7 +2425,7 @@
     
 
     
-    <h4 class="name" id="getTasks"><span class="type-signature">(async) </span>getTasks<span class="signature">()</span><span class="type-signature"> &rarr; {Promise.&lt;void>}</span></h4>
+    <h4 class="name" id="getTasks"><span class="type-signature">(async) </span>getTasks<span class="signature">(req, res)</span><span class="type-signature"> &rarr; {Promise.&lt;void>}</span></h4>
     
 
     
@@ -2433,10 +2469,15 @@
 
         <tr>
             
-                <td class="name"><code></code></td>
+                <td class="name"><code>req</code></td>
             
 
             <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
             
             </td>
 
@@ -2444,14 +2485,33 @@
 
             
 
-            <td class="description last"></td>
-        </tr>
+            <td class="description last">Express request object.
+                <h6>Properties</h6>
+                
 
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
     
 
         <tr>
             
-                <td class="name"><code>req.params</code></td>
+                <td class="name"><code>params</code></td>
             
 
             <td class="type">
@@ -2520,13 +2580,25 @@
         </tr>
 
     
+    </tbody>
+</table>
+
+            </td>
+        </tr>
+
+    
 
         <tr>
             
-                <td class="name"><code></code></td>
+                <td class="name"><code>res</code></td>
             
 
             <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
             
             </td>
 
@@ -2534,7 +2606,7 @@
 
             
 
-            <td class="description last"></td>
+            <td class="description last">Express response object.</td>
         </tr>
 
     
@@ -2575,7 +2647,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="controllers_task-controller.js.html">controllers/task-controller.js</a>, <a href="controllers_task-controller.js.html#line4">line 4</a>
+        <a href="controllers_task-controller.js.html">controllers/task-controller.js</a>, <a href="controllers_task-controller.js.html#line21">line 21</a>
     </li></ul></dd>
     
 
@@ -2628,7 +2700,7 @@
 
     <h5>Example</h5>
     
-    <pre class="prettyprint"><code>// Route usage in Express:router.get('/projects/:projectId/tasks', taskController.getTasks);</code></pre>
+    <pre class="prettyprint"><code>// Route usage in Express:// router.get('/projects/:projectId/tasks', taskController.getTasks);</code></pre>
 
 
 
@@ -2933,7 +3005,7 @@
     
 
     
-    <h4 class="name" id="updateTaskStatus"><span class="type-signature">(async) </span>updateTaskStatus<span class="signature">()</span><span class="type-signature"> &rarr; {Promise.&lt;void>}</span></h4>
+    <h4 class="name" id="updateTaskStatus"><span class="type-signature">(async) </span>updateTaskStatus<span class="signature">(req, res)</span><span class="type-signature"> &rarr; {Promise.&lt;void>}</span></h4>
     
 
     
@@ -2977,10 +3049,15 @@
 
         <tr>
             
-                <td class="name"><code></code></td>
+                <td class="name"><code>req</code></td>
             
 
             <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
             
             </td>
 
@@ -2988,14 +3065,33 @@
 
             
 
-            <td class="description last"></td>
-        </tr>
+            <td class="description last">Express request object.
+                <h6>Properties</h6>
+                
 
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
     
 
         <tr>
             
-                <td class="name"><code>req.params</code></td>
+                <td class="name"><code>params</code></td>
             
 
             <td class="type">
@@ -3070,7 +3166,7 @@
 
         <tr>
             
-                <td class="name"><code>req.body</code></td>
+                <td class="name"><code>body</code></td>
             
 
             <td class="type">
@@ -3165,13 +3261,25 @@
         </tr>
 
     
+    </tbody>
+</table>
+
+            </td>
+        </tr>
+
+    
 
         <tr>
             
-                <td class="name"><code></code></td>
+                <td class="name"><code>res</code></td>
             
 
             <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
             
             </td>
 
@@ -3179,7 +3287,7 @@
 
             
 
-            <td class="description last"></td>
+            <td class="description last">Express response object.</td>
         </tr>
 
     
@@ -3220,7 +3328,7 @@
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="controllers_task-controller.js.html">controllers/task-controller.js</a>, <a href="controllers_task-controller.js.html#line113">line 113</a>
+        <a href="controllers_task-controller.js.html">controllers/task-controller.js</a>, <a href="controllers_task-controller.js.html#line127">line 127</a>
     </li></ul></dd>
     
 
@@ -3273,7 +3381,7 @@
 
     <h5>Example</h5>
     
-    <pre class="prettyprint"><code>// Route usage in Express:router.post('/projects/:projectId/tasks/update-status', taskController.updateTaskStatus);</code></pre>
+    <pre class="prettyprint"><code>// Route usage in Express:// router.post('/projects/:projectId/tasks/update-status', taskController.updateTaskStatus);</code></pre>
 
 
 
@@ -3293,21 +3401,13 @@
 </div>
 
 <nav>
-<<<<<<< HEAD
-    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="controllers_auth.module_controller.html">controller</a></li><li><a href="module-app.html">app</a></li><li><a href="module-configs_db.html">configs/db</a></li><li><a href="module-controllers_dashboard-controller.html">controllers/dashboard-controller</a></li><li><a href="module-controllers_password-reset-controller.html">controllers/password-reset-controller</a></li><li><a href="module-controllers_project-controller.html">controllers/project-controller</a></li><li><a href="module-models_dashboard.html">models/dashboard</a></li><li><a href="module-models_password-reset.html">models/password-reset</a></li><li><a href="module-models_project.html">models/project</a></li><li><a href="module-routes_auth.html">routes/auth</a></li><li><a href="module-routes_dashboard-routes.html">routes/dashboard-routes</a></li><li><a href="module-routes_password-reset-routes.html">routes/password-reset-routes</a></li><li><a href="module-routes_project-routes.html">routes/project-routes</a></li><li><a href="module-routes_tasks.html">routes/tasks</a></li></ul><h3>Classes</h3><ul><li><a href="module-models_project-Project.html">Project</a></li></ul><h3>Global</h3><ul><li><a href="global.html#acceptInvitation">acceptInvitation</a></li><li><a href="global.html">assignUser</a></li><li><a href="global.html">create</a></li><li><a href="global.html#createTask">createTask</a></li><li><a href="global.html">getAll</a></li><li><a href="global.html">getByProjectId</a></li><li><a href="global.html#getInvitationsByUserId">getInvitationsByUserId</a></li><li><a href="global.html">getParticipantsByProject</a></li><li><a href="global.html">getProjectNameById</a></li><li><a href="global.html#getTasks">getTasks</a></li><li><a href="global.html#rejectInvitation">rejectInvitation</a></li><li><a href="global.html">updateStatus</a></li><li><a href="global.html#updateTaskStatus">updateTaskStatus</a></li></ul>
-=======
     <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="controllers_auth.module_controller.html">controller</a></li><li><a href="module-app.html">app</a></li><li><a href="module-configs_db.html">configs/db</a></li><li><a href="module-controllers_dashboard-controller.html">controllers/dashboard-controller</a></li><li><a href="module-controllers_password-reset-controller.html">controllers/password-reset-controller</a></li><li><a href="module-controllers_project-controller.html">controllers/project-controller</a></li><li><a href="module-models_dashboard.html">models/dashboard</a></li><li><a href="module-models_password-reset.html">models/password-reset</a></li><li><a href="module-models_project.html">models/project</a></li><li><a href="module-routes_auth.html">routes/auth</a></li><li><a href="module-routes_dashboard-routes.html">routes/dashboard-routes</a></li><li><a href="module-routes_password-reset-routes.html">routes/password-reset-routes</a></li><li><a href="module-routes_project-routes.html">routes/project-routes</a></li><li><a href="module-routes_tasks.html">routes/tasks</a></li></ul><h3>Classes</h3><ul><li><a href="module-models_project-Project.html">Project</a></li></ul><h3>Global</h3><ul><li><a href="global.html#acceptInvitation">acceptInvitation</a></li><li><a href="global.html">assignUser</a></li><li><a href="global.html">create</a></li><li><a href="global.html#createTask">createTask</a></li><li><a href="global.html">getAll</a></li><li><a href="global.html">getByProjectId</a></li><li><a href="global.html#getInvitationsByUserId">getInvitationsByUserId</a></li><li><a href="global.html">getParticipantsByProject</a></li><li><a href="global.html">getProjectNameById</a></li><li><a href="global.html#getTasks">getTasks</a></li><li><a href="global.html#nodemailer">nodemailer</a></li><li><a href="global.html#rejectInvitation">rejectInvitation</a></li><li><a href="global.html">updateStatus</a></li><li><a href="global.html#updateTaskStatus">updateTaskStatus</a></li></ul>
->>>>>>> f3aff16022c7bc957de385cffbb626f871c9dc31
 </nav>
 
 <br class="clear">
 
 <footer>
-<<<<<<< HEAD
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.4</a> on Wed Aug 13 2025 21:46:55 GMT+0600 (Bangladesh Standard Time)
-=======
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.4</a> on Wed Aug 13 2025 21:45:10 GMT+0600 (Bangladesh Standard Time)
->>>>>>> f3aff16022c7bc957de385cffbb626f871c9dc31
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.4</a> on Wed Aug 13 2025 21:56:23 GMT+0600 (Bangladesh Standard Time)
 </footer>
 
 <script> prettyPrint(); </script>
